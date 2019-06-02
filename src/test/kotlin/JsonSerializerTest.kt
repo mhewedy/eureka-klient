@@ -1,6 +1,6 @@
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
 import kotlin.reflect.full.declaredMembers
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 
 class JsonSerializerKtTest {
