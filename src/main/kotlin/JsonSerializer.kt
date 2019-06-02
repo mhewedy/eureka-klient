@@ -5,38 +5,44 @@ import kotlin.reflect.full.createType
 import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.full.extensionReceiverParameter
 
-private val stringType by lazy { String::class.createType() }
-
-private val numberTypes by lazy {
+private val stringType by lazy {
     arrayOf(
-        Byte::class.createType(),
-        Short::class.createType(),
-        Int::class.createType(),
-        Long::class.createType(),
-        Float::class.createType(),
-        Double::class.createType()
+        String::class.createType(), String::class.createType(nullable = true)
     )
 }
 
-fun serialize(obj: Any) = obj::class.declaredMembers
-    .filter { isProperty(it) }
-    .map { serialize(obj, it) }
-    .joinToString(prefix = "{", separator = ",", postfix = "}")
+private val numberTypes by lazy {
+    arrayOf(
+        Byte::class.createType(), Byte::class.createType(nullable = true),
+        Short::class.createType(), Short::class.createType(nullable = true),
+        Int::class.createType(), Int::class.createType(nullable = true),
+        Long::class.createType(), Long::class.createType(nullable = true),
+        Float::class.createType(), Float::class.createType(nullable = true),
+        Byte::class.createType(), Byte::class.createType(nullable = true)
+    )
+}
 
-fun serialize(obj: Any, property: KCallable<*>): String {
+fun serialize(obj: Any?) = obj?.let {
+    obj::class.declaredMembers
+        .filter { isProperty(it) }
+        .map { serialize(obj, it) }
+        .joinToString(prefix = "{", separator = ",", postfix = "}")
+}
+
+fun serialize(obj: Any?, property: KCallable<*>): String {
     val value = when {
         property.returnType in numberTypes -> property.call(obj)
-        property.returnType == stringType -> (property.call(obj) as String).doubleQuote()
+        property.returnType in stringType -> (property.call(obj) as String?)?.doubleQuote()
         property.returnType.arguments.isNotEmpty()
                 && isCollection(property.returnType) -> serializeCollection(property, obj)
-        else -> serialize(property.call(obj) as Any)
+        else -> serialize(property.call(obj))
     }
     return property.name.doubleQuote() + ":" + value
 }
 
-fun serializeCollection(property: KCallable<*>, obj: Any) =
+fun serializeCollection(property: KCallable<*>, obj: Any?) =
     (property.call(obj) as Collection<*>)
-        .map { serialize(it as Any) }
+        .map { serialize(it) }
         .joinToString(prefix = "[", separator = ",", postfix = "]")
 
 private fun isProperty(it: KCallable<*>) =

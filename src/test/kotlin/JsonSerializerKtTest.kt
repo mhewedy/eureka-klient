@@ -81,17 +81,22 @@ class JsonSerializerKtTest {
         )
     }
 
-    /*@Test
-    fun testNullCases() {
+    @Test
+    fun `can serialize object of one nullable primitive`() {
+        class StringDummy(val s: String? = "Yes")
+        assertEquals("""{"s":"Yes"}""", serialize(StringDummy()))
+    }
+
+    @Test
+    fun supportNullableTypes() {
         data class User(val name: String?, val age: Int)
         data class Course(val users: List<User>)
 
-        val course = Course(arrayListOf(User("ali", 30), User("mostafa", 20), User("monsour", 40)))
+        val course = Course(arrayListOf(User(null, 30), User("mostafa", 20), User("monsour", 40)))
 
         assertEquals(
-            """{"users":[{"age":30,"name":"ali"},{"age":20,"name":"mostafa"},{"age":40,"name":"monsour"}]}""",
+            """{"users":[{"age":30,"name":null},{"age":20,"name":"mostafa"},{"age":40,"name":"monsour"}]}""",
             course.toJson()
         )
-    }*/
-
+    }
 }
