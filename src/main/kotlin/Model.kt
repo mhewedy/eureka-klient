@@ -5,17 +5,32 @@ class Instance(
     var vipAddress: String,
     var secureVipAddress: String,
     var status: StatusType,
-    var port: Long,
+    var port: Long? = null,
     var securePort: Long,
     var homePageUrl: String,
     var statusPageUrl: String,
     var healthCheckUrl: String,
     var dataCenterInfo: DataCenterInfo,
-    var leaseInfo: LeaseInfo,
-    var metadata: AppMetadataType
+    var leaseInfo: LeaseInfo? = null,
+    var metadata: AppMetadataType? = null
 )
 
-class DataCenterInfo(var name: DcNameType, var metadata: AmazonMetdataType)
+class DataCenterInfo(var name: DcNameType, var metadata: AmazonMetdataType? = null)
+
+class LeaseInfo(var evictionDurationInSecs: Long? = null)
+
+enum class DcNameType(private val value: String) {
+    MY_OWN("MyOwn"),
+    AMAZON("Amazon");
+}
+
+enum class StatusType {
+    UP,
+    DOWN,
+    STARTING,
+    OUT_OF_SERVICE,
+    UNKNOWN;
+}
 
 class AmazonMetdataType(
     var amiLaunchIndex: String,
@@ -31,19 +46,4 @@ class AmazonMetdataType(
     var instanceType: String
 )
 
-class LeaseInfo(var evictionDurationInSecs: Long)
-
 class AppMetadataType(var any: Map<String, Any?>?)
-
-enum class DcNameType(private val value: String) {
-    MY_OWN("MyOwn"),
-    AMAZON("Amazon");
-}
-
-enum class StatusType {
-    UP,
-    DOWN,
-    STARTING,
-    OUT_OF_SERVICE,
-    UNKNOWN;
-}
