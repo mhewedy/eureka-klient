@@ -81,4 +81,17 @@ class JsonSerializerKtTest {
         )
     }
 
+    /*@Test
+    fun testNullCases() {
+        data class User(val name: String?, val age: Int)
+        data class Course(val users: List<User>)
+
+        val course = Course(arrayListOf(User("ali", 30), User("mostafa", 20), User("monsour", 40)))
+
+        assertEquals(
+            """{"users":[{"age":30,"name":"ali"},{"age":20,"name":"mostafa"},{"age":40,"name":"monsour"}]}""",
+            course.toJson()
+        )
+    }*/
+
 }
