@@ -7,7 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
-class JsonSerializerKtTest {
+class JsonSerializerTest {
 
     @Test
     fun `can serialize numbers`() {

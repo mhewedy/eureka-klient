@@ -19,7 +19,7 @@ class DataCenterInfo(var name: DcNameType, var metadata: AmazonMetdataType? = nu
 
 class LeaseInfo(var evictionDurationInSecs: Long? = null)
 
-enum class DcNameType(private val value: String) {
+enum class DcNameType(val value: String) {
     MY_OWN("MyOwn"),
     AMAZON("Amazon");
 }
