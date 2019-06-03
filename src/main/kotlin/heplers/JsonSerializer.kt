@@ -25,10 +25,21 @@ private val numberTypes by lazy {
 }
 
 fun serialize(obj: Any?) = obj?.let {
-    obj::class.declaredMembers
+
+    val properties = obj::class.declaredMembers
         .filter { isProperty(it) }
-        .map { serialize(obj, it) }
-        .joinToString(prefix = "{", separator = ",", postfix = "}")
+
+    if (properties.isNotEmpty()) {
+        return@let properties
+            .map { serialize(obj, it) }
+            .joinToString(prefix = "{", separator = ",", postfix = "}")
+    }
+
+    if (obj is Enum<*>) { // enum with no properties
+        return@let obj.name.doubleQuote()
+    }
+
+    return@let null
 }
 
 fun serialize(obj: Any?, property: KCallable<*>): String {

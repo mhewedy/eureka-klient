@@ -103,4 +103,15 @@ class JsonSerializerTest {
             course.toJson()
         )
     }
+
+    enum class Enum1 { VAL1, VAL2 }
+    enum class Enum2(val prop: String) { VAL1("myVal1"), VAL2("myVal2") }
+
+    @Test
+    fun testSerializationForEnums() {
+        assertEquals(""""VAL1"""", Enum1.VAL1.toJson())
+        assertEquals("""{"prop":"myVal1"}""", Enum2.VAL1.toJson())
+    }
+
+
 }
