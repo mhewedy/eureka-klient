@@ -24,7 +24,7 @@ private val numberTypes by lazy {
     )
 }
 
-fun serialize(obj: Any?) = obj?.let {
+fun serialize(obj: Any?): String? = obj?.let {
 
     val jsonStr = callToJsonFunction(obj)
     if (jsonStr != null)
@@ -76,16 +76,16 @@ private fun isCollection(returnType: KType) =
     )
 
 
-private fun callToJsonFunction(obj: Any?) = obj?.let {
+private fun callToJsonFunction(obj: Any?): String? = obj?.let {
     obj::class.memberFunctions
         .find {
             it.name == "toJson" &&
                     it.returnType in stringType &&
                     it.parameters.size == 1
         }
-        ?.call(obj)
+        ?.call(obj) as String?
 }
 
-fun Any.toJson() = serialize(this)
+fun Any.toJson(): String? = serialize(this)
 
 fun String.doubleQuote() = """"$this""""
