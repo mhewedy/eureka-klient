@@ -1,5 +1,6 @@
 package helpers
 
+import heplers.doubleQuote
 import heplers.serialize
 import heplers.toJson
 import kotlin.reflect.full.declaredMembers
@@ -113,14 +114,15 @@ class JsonSerializerTest {
         assertEquals("""{"prop":"myVal1"}""", Enum2.VAL1.toJson())
     }
 
-//    @Test
-    /*fun allowOverrideToJsonMethod() {
-        data class User(val name: String?, val age: Int)
-        data class Course(val users: List<User>)
+    @Test
+    fun allowOverrideToJsonMethod() {
+        data class User(val name: String?, val age: Int) {
+            fun toJson(): String {
+                return """{"nom":${name?.doubleQuote()}}"""
+            }
+        }
 
-        fun User.toJson() = """
-            {"nom": "$name"}
-        """.trimIndent()
+        data class Course(val users: List<User>)
 
         val course = Course(arrayListOf(User(null, 30), User("mostafa", 20), User("monsour", 40)))
 
@@ -128,5 +130,5 @@ class JsonSerializerTest {
             """{"users":[{"nom":null},{"nom":"mostafa"},{"nom":"monsour"}]}""",
             course.toJson()
         )
-    }*/
+    }
 }

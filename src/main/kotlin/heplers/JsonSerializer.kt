@@ -5,6 +5,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.extensionReceiverParameter
+import kotlin.reflect.full.memberFunctions
 
 private val stringType by lazy {
     arrayOf(
@@ -24,6 +25,10 @@ private val numberTypes by lazy {
 }
 
 fun serialize(obj: Any?) = obj?.let {
+
+    val jsonStr = callToJsonFunction(obj)
+    if (jsonStr != null)
+        return@let jsonStr
 
     val properties = obj::class.members
         .filter { isProperty(obj, it) }
@@ -70,6 +75,17 @@ private fun isCollection(returnType: KType) =
         List::class.createType(returnType.arguments)
     )
 
+
+private fun callToJsonFunction(obj: Any?) = obj?.let {
+    obj::class.memberFunctions
+        .find {
+            it.name == "toJson" &&
+                    it.returnType in stringType &&
+                    it.parameters.size == 1
+        }
+        ?.call(obj)
+}
+
 fun Any.toJson() = serialize(this)
 
-private fun String.doubleQuote() = """"$this""""
+fun String.doubleQuote() = """"$this""""
