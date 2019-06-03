@@ -4,7 +4,6 @@ import kotlin.reflect.KCallable
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
-import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.full.extensionReceiverParameter
 
 private val stringType by lazy {
@@ -26,8 +25,8 @@ private val numberTypes by lazy {
 
 fun serialize(obj: Any?) = obj?.let {
 
-    val properties = obj::class.declaredMembers
-        .filter { isProperty(it) }
+    val properties = obj::class.members
+        .filter { isProperty(obj, it) }
 
     if (properties.isNotEmpty()) {
         return@let properties
@@ -58,8 +57,11 @@ fun serializeCollection(property: KCallable<*>, obj: Any?) =
         .map { serialize(it) }
         .joinToString(prefix = "[", separator = ",", postfix = "]")
 
-private fun isProperty(it: KCallable<*>) =
-    it.extensionReceiverParameter == null && it is KProperty1<*, *>
+private fun isProperty(obj: Any?, it: KCallable<*>): Boolean {
+    val enumInartisticProps = obj is Enum<*> && it.name in arrayOf("name", "ordinal")
+    val isProperty = it.extensionReceiverParameter == null && it is KProperty1<*, *>
+    return isProperty && !enumInartisticProps
+}
 
 private fun isCollection(returnType: KType) =
     returnType in arrayOf(

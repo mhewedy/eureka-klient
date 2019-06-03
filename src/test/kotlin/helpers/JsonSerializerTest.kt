@@ -113,5 +113,20 @@ class JsonSerializerTest {
         assertEquals("""{"prop":"myVal1"}""", Enum2.VAL1.toJson())
     }
 
+//    @Test
+    /*fun allowOverrideToJsonMethod() {
+        data class User(val name: String?, val age: Int)
+        data class Course(val users: List<User>)
 
+        fun User.toJson() = """
+            {"nom": "$name"}
+        """.trimIndent()
+
+        val course = Course(arrayListOf(User(null, 30), User("mostafa", 20), User("monsour", 40)))
+
+        assertEquals(
+            """{"users":[{"nom":null},{"nom":"mostafa"},{"nom":"monsour"}]}""",
+            course.toJson()
+        )
+    }*/
 }
