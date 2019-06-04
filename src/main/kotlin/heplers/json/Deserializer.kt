@@ -10,6 +10,10 @@ object Token {
     const val leftBrace = "{"
     const val rightBrace = "}"
     const val doubleQuote = "\""
+    const val comma = ","
+    const val colon = ":"
+
+    //todo add all tokens in here: http://json.org/
 }
 
 fun main() {
