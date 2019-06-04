@@ -1,14 +1,14 @@
-package helpers
+package helpers.json
 
-import heplers.doubleQuote
-import heplers.serialize
-import heplers.toJson
+import heplers.json.doubleQuote
+import heplers.json.serialize
+import heplers.json.toJson
 import kotlin.reflect.full.declaredMembers
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
-class JsonSerializerTest {
+class SerializerTest {
 
     @Test
     fun `can serialize numbers`() {
@@ -117,7 +117,7 @@ class JsonSerializerTest {
     @Test
     fun allowOverrideToJsonMethod() {
         data class User(val name: String?, val age: Int) {
-            fun toJson(): String {
+            fun toJson(): String {  // override the json by supplying `toJson(): String` function (duck typing)
                 return """{"nom":${name?.doubleQuote()}}"""
             }
         }

@@ -1,4 +1,4 @@
-package heplers
+package heplers.json
 
 import kotlin.reflect.KCallable
 import kotlin.reflect.KProperty1
@@ -86,6 +86,11 @@ private fun callToJsonFunction(obj: Any?): String? = obj?.let {
         ?.call(obj) as String?
 }
 
+/**
+ * Serializes object to json.
+ * It can be customized by providing a member function [toJson(): String]
+ * for any object in the object graph
+ */
 fun Any.toJson(): String? = serialize(this)
 
 fun String.doubleQuote() = """"$this""""

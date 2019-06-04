@@ -1,4 +1,4 @@
-import heplers.toJson
+import heplers.json.toJson
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
