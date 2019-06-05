@@ -155,9 +155,9 @@ class ParserTest {
     }
 
     @Test
-    fun `array of objects of array of objects`() {
+    fun `object of array of objects of array of objects`() {
         val json = """
-            [{"years":[{"name":"elephant","digits":"2019"},{"name":"joungle","digits":"2018"}]},{"years":[{"name":"donkey","digits":"2015"},{"name":"tiger","digits":"1009"}]}]
+            {"type":"1","model":[{"years":[{"name":"elephant","digits":"2019"},{"name":"joungle","digits":"2018"}]},{"years":[{"name":"donkey","digits":"2015"},{"name":"tiger","digits":"1009"}]}]}
         """.trimIndent()
 
         val actualNode = Parser(json).use {
@@ -165,24 +165,29 @@ class ParserTest {
         }
 
         assertEquals(
-            ArrayNode(
+            ObjectNode(
                 arrayListOf(
-                    ObjectNode(
+                    "type" to "1",
+                    "model" to ArrayNode(
                         arrayListOf(
-                            "years" to ArrayNode(
+                            ObjectNode(
                                 arrayListOf(
-                                    ObjectNode(arrayListOf("name" to "elephant", "digits" to "2019")),
-                                    ObjectNode(arrayListOf("name" to "joungle", "digits" to "2018"))
+                                    "years" to ArrayNode(
+                                        arrayListOf(
+                                            ObjectNode(arrayListOf("name" to "elephant", "digits" to "2019")),
+                                            ObjectNode(arrayListOf("name" to "joungle", "digits" to "2018"))
+                                        )
+                                    )
                                 )
-                            )
-                        )
-                    ),
-                    ObjectNode(
-                        arrayListOf(
-                            "years" to ArrayNode(
+                            ),
+                            ObjectNode(
                                 arrayListOf(
-                                    ObjectNode(arrayListOf("name" to "donkey", "digits" to "2015")),
-                                    ObjectNode(arrayListOf("name" to "tiger", "digits" to "1009"))
+                                    "years" to ArrayNode(
+                                        arrayListOf(
+                                            ObjectNode(arrayListOf("name" to "donkey", "digits" to "2015")),
+                                            ObjectNode(arrayListOf("name" to "tiger", "digits" to "1009"))
+                                        )
+                                    )
                                 )
                             )
                         )

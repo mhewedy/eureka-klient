@@ -43,25 +43,25 @@ class Parser(json: String) : Closeable {
 
         when (currentChar()) {
             leftBrace -> {
-                return parseObject(props, elements)
+                return parseObject(elements = elements)
             }
             rightBrace -> {
                 return ObjectNode(props)
             }
             leftBracket -> {
-                elements += parse(props)
+                elements += parse()
                 return parse(elements = elements)
             }
             rightBracket -> {
                 return ArrayNode(elements)
             }
             comma -> {
-                if (props.isNotEmpty()) {
-                    return parseObject(props, elements)
-                }
                 if (elements.isNotEmpty()) {
                     elements += parse(props)
                     return parse(props, elements)
+                }
+                if (props.isNotEmpty()) {
+                    return parseObject(props, elements)
                 }
             }
         }
@@ -69,7 +69,7 @@ class Parser(json: String) : Closeable {
     }
 
     private fun parseObject(
-        props: ArrayList<Pair<String, Any?>>,
+        props: ArrayList<Pair<String, Any?>> = arrayListOf(),
         elements: ArrayList<Node> = arrayListOf()
     ): Node {
         readUntil(doubleQuote)
@@ -88,7 +88,7 @@ class Parser(json: String) : Closeable {
                 return parse(props, elements)
             }
             leftBracket -> {
-                elements += parse(elements = elements)
+                elements += parse(props)
                 props += Pair(key, parse(elements = elements))
                 return parse(props, elements)
             }
@@ -130,7 +130,7 @@ class Parser(json: String) : Closeable {
 fun main() {
     //[[[{"name":"efg"},{"name":"efg"}]]]
     val json = """
-        [{"years":[{"name":"elephant","digits":"2019"},{"name":"joungle","digits":"2018"}]},{"years":[{"name":"donkey","digits":"2015"},{"name":"tiger","digits":"1009"}]}]
+        {"type":"1","model":[{"years":[{"name":"elephant","digits":"2019"},{"name":"joungle","digits":"2018"}]},{"years":[{"name":"donkey","digits":"2015"},{"name":"tiger","digits":"1009"}]}]}
     """.trimIndent()
 
     Parser(json).use {
