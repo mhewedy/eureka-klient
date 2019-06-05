@@ -130,10 +130,11 @@ class Parser(json: String) : Closeable {
 fun main() {
     //[[[{"name":"efg"},{"name":"efg"}]]]
     val json = """
-        {"type":"1","model":[{"years":[{"name":"elephant","digits":"2019"},{"name":"joungle","digits":"2018"}]},{"years":[{"name":"donkey","digits":"2015"},{"name":"tiger","digits":"1009"}]}]}
+        [{"years":[{"name":"elephant","digits":"2019"},{"name":"joungle","digits":"2018"}]},{"years":[{"name":"donkey","digits":"2015"},{"name":"tiger","digits":"1009"}]}]
     """.trimIndent()
 
     Parser(json).use {
-        println(it.parse())
+        val result = it.parse()
+        println(result)
     }
 }
