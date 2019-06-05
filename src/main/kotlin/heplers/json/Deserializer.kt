@@ -30,7 +30,7 @@ object EmptyNode : Node()
 data class ObjectNode(val props: ArrayList<Pair<String, Any?>>) : Node()
 data class ArrayNode(val elements: ArrayList<Node>) : Node()
 
-class Tokenizer(json: String) : Closeable {
+class Parser(json: String) : Closeable {
     val reader = PushbackReader(json.reader())
 
     private fun currentChar() = reader.read().toChar()
@@ -133,7 +133,7 @@ fun main() {
         [{"name":"efg"},{"name":"efg"}]
     """.trimIndent()
 
-    Tokenizer(json).use {
+    Parser(json).use {
         println(it.parse())
     }
 }

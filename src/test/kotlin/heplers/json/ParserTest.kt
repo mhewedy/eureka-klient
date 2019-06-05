@@ -3,14 +3,14 @@ package heplers.json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class TokenizerTest {
+class ParserTest {
 
     @Test
     fun `test readUntil`() {
-        val tokenizer = Tokenizer("this is the value \"stop use it")
-        val beforeDelimiter = tokenizer.readUntil('"')
-        val rest = tokenizer.reader.readText()
-        tokenizer.close()
+        val parser = Parser("this is the value \"stop use it")
+        val beforeDelimiter = parser.readUntil('"')
+        val rest = parser.reader.readText()
+        parser.close()
 
         assertEquals("this is the value ", beforeDelimiter)
         assertEquals("stop use it", rest)
@@ -18,31 +18,31 @@ class TokenizerTest {
 
     @Test
     fun `test readUntil not found`() {
-        val tokenizer = Tokenizer("this is the value \"stop use it")
-        val beforeDelimiter = tokenizer.readUntil('X')
-        tokenizer.close()
+        val parser = Parser("this is the value \"stop use it")
+        val beforeDelimiter = parser.readUntil('X')
+        parser.close()
         assertEquals("this is the value \"stop use it", beforeDelimiter)
     }
 
     @Test
     fun `test skip when found`() {
-        val tokenizer = Tokenizer("   hello")
-        tokenizer.skipWhiteSpaces()
-        assertEquals("hello", tokenizer.reader.readText())
-        tokenizer.close()
+        val parser = Parser("   hello")
+        parser.skipWhiteSpaces()
+        assertEquals("hello", parser.reader.readText())
+        parser.close()
     }
 
     @Test
     fun `test skip white space when found`() {
-        val tokenizer = Tokenizer("\nhello")
-        tokenizer.skipWhiteSpaces()
-        assertEquals("hello", tokenizer.reader.readText())
-        tokenizer.close()
+        val parser = Parser("\nhello")
+        parser.skipWhiteSpaces()
+        assertEquals("hello", parser.reader.readText())
+        parser.close()
     }
 
     @Test
     fun `test skip when not found`() {
-        Tokenizer("hello").use {
+        Parser("hello").use {
             it.skipWhiteSpaces()
             assertEquals("hello", it.reader.readText())
         }
@@ -55,7 +55,7 @@ class TokenizerTest {
             {"name":{"firstName":"wael"},"age":"30"}
         """.trimIndent()
 
-        val actualNode = Tokenizer(json).use {
+        val actualNode = Parser(json).use {
             it.parse()
         }
 
@@ -77,7 +77,7 @@ class TokenizerTest {
             [{"name":"wael"},{"name":{"firstName":"wael"},"age":"30"}]
         """.trimIndent()
 
-        val actualNode = Tokenizer(json).use {
+        val actualNode = Parser(json).use {
             it.parse()
         }
 
@@ -104,7 +104,7 @@ class TokenizerTest {
             [[[{"name":"abc","age":"30"},{"name":"efg"}]]]
         """.trimIndent()
 
-        val actualNode = Tokenizer(json).use {
+        val actualNode = Parser(json).use {
             it.parse()
         }
 
@@ -134,7 +134,7 @@ class TokenizerTest {
             {"occupations":[{"title":"Clark","grade":"10","salary":"300"},{"title":"Accountant","grade":"n/a","salary":"150"}]}
         """.trimIndent()
 
-        val actualNode = Tokenizer(json).use {
+        val actualNode = Parser(json).use {
             it.parse()
         }
 
