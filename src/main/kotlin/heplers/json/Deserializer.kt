@@ -43,49 +43,55 @@ class Tokenizer(json: String) : Closeable {
 
         when (currentChar()) {
             leftBrace -> {
-                return parseObject(props)
+                return parseObject(props, elements)
             }
             rightBrace -> {
                 return ObjectNode(props)
             }
             leftBracket -> {
-                return parseArray(elements)
+                elements += parse(props)
+                return parse(elements = elements)
             }
             rightBracket -> {
                 return ArrayNode(elements)
             }
             comma -> {
-                if (props.isNotEmpty())
-                    return parseObject(props)
-                if (elements.isNotEmpty())
-                    return parseArray(elements)
+                if (props.isNotEmpty()) {
+                    return parseObject(props, elements)
+                }
+                if (elements.isNotEmpty()) {
+                    elements += parse(props)
+                    return parse(props, elements)
+                }
             }
         }
         return EmptyNode
     }
 
-    private fun parseArray(elements: ArrayList<Node>): Node {
-        elements += parse()
-        return parse(elements = elements)
-    }
-
-    private fun parseObject(props: ArrayList<Pair<String, Any?>>): Node {
+    private fun parseObject(
+        props: ArrayList<Pair<String, Any?>>,
+        elements: ArrayList<Node> = arrayListOf()
+    ): Node {
         readUntil(doubleQuote)
         val key = readUntil(doubleQuote)
         readUntil(colon)
-        skipWhiteSpace()
+        skipWhiteSpaces()
         when (val nextChar = currentChar()) {
             doubleQuote -> {
                 val value = readUntil(doubleQuote)
                 props += Pair(key, value)
-                return parse(props)
+                return parse(props, elements)
             }
             leftBrace -> {
                 unread(nextChar)
-                props += Pair(key, parse())
-                return parse(props)
+                props += Pair(key, parse(elements = elements))
+                return parse(props, elements)
             }
-            else -> EmptyNode
+            leftBracket -> {
+                elements += parse(elements = elements)
+                props += Pair(key, parse(elements = elements))
+                return parse(props, elements)
+            }
         }
         return EmptyNode
     }
@@ -104,7 +110,7 @@ class Tokenizer(json: String) : Closeable {
         return out.toString()
     }
 
-    fun skipWhiteSpace() {
+    fun skipWhiteSpaces() {
         skip { it.isWhitespace() }
     }
 
@@ -122,8 +128,9 @@ class Tokenizer(json: String) : Closeable {
 }
 
 fun main() {
+    //[[[{"name":"efg"},{"name":"efg"}]]]
     val json = """
-        [[[{"name":"abc"},{"age":"efg"}]]]
+        [{"name":"efg"},{"name":"efg"}]
     """.trimIndent()
 
     Tokenizer(json).use {

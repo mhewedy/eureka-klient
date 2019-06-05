@@ -27,7 +27,7 @@ class TokenizerTest {
     @Test
     fun `test skip when found`() {
         val tokenizer = Tokenizer("   hello")
-        tokenizer.skipWhiteSpace()
+        tokenizer.skipWhiteSpaces()
         assertEquals("hello", tokenizer.reader.readText())
         tokenizer.close()
     }
@@ -35,7 +35,7 @@ class TokenizerTest {
     @Test
     fun `test skip white space when found`() {
         val tokenizer = Tokenizer("\nhello")
-        tokenizer.skipWhiteSpace()
+        tokenizer.skipWhiteSpaces()
         assertEquals("hello", tokenizer.reader.readText())
         tokenizer.close()
     }
@@ -43,7 +43,7 @@ class TokenizerTest {
     @Test
     fun `test skip when not found`() {
         Tokenizer("hello").use {
-            it.skipWhiteSpace()
+            it.skipWhiteSpaces()
             assertEquals("hello", it.reader.readText())
         }
     }
@@ -119,6 +119,32 @@ class TokenizerTest {
                                     ObjectNode(arrayListOf("name" to "efg"))
                                 )
                             )
+                        )
+                    )
+                )
+            ),
+            actualNode
+        )
+    }
+
+    @Test
+    fun `test parse object of array of objects`() {
+
+        val json = """
+            {"occupations":[{"title":"Clark","grade":"10","salary":"300"},{"title":"Accountant","grade":"n/a","salary":"150"}]}
+        """.trimIndent()
+
+        val actualNode = Tokenizer(json).use {
+            it.parse()
+        }
+
+        assertEquals(
+            ObjectNode(
+                arrayListOf(
+                    "occupations" to ArrayNode(
+                        arrayListOf(
+                            ObjectNode(arrayListOf("title" to "Clark", "grade" to "10", "salary" to "300")),
+                            ObjectNode(arrayListOf("title" to "Accountant", "grade" to "n/a", "salary" to "150"))
                         )
                     )
                 )
