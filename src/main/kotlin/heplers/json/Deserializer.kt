@@ -4,7 +4,9 @@ import heplers.json.Token.colon
 import heplers.json.Token.comma
 import heplers.json.Token.doubleQuote
 import heplers.json.Token.leftBrace
+import heplers.json.Token.leftBracket
 import heplers.json.Token.rightBrace
+import heplers.json.Token.rightBracket
 import java.io.PushbackReader
 import java.io.StringWriter
 
@@ -20,43 +22,68 @@ private object Token {
     const val doubleQuote = '"'
     const val comma = ','
     const val colon = ':'
-    const val space = ' '
 }
 
 sealed class Node
 object EmptyNode : Node()
-data class ObjectNode(val kvPairs: ArrayList<Pair<String, Any?>>) : Node()
-data class ArrayNode(val elements: ObjectNode) : Node()
+data class ObjectNode(val props: ArrayList<Pair<String, Any?>>) : Node()
+data class ArrayNode(val elements: ArrayList<Node>) : Node()
 
 class Tokenizer(json: String) {
     val reader = PushbackReader(json.reader())
 
-    fun parse(kvPairs: ArrayList<Pair<String, Any?>> = arrayListOf()): Node {
-        fun currentChar() = reader.read().toChar()
-        fun unread(char: Char) = reader.unread(char.toInt())
+    private fun currentChar() = reader.read().toChar()
+    private fun unread(char: Char) = reader.unread(char.toInt())
+
+    fun parse(
+        props: ArrayList<Pair<String, Any?>> = arrayListOf(),
+        elements: ArrayList<Node> = arrayListOf()
+    ): Node {
 
         when (currentChar()) {
-            leftBrace, comma -> {
-                readUntil(doubleQuote)
-                val key = readUntil(doubleQuote)
-                readUntil(colon)
-                skipWhiteSpace()
-                when (val nextChar = currentChar()) {
-                    doubleQuote -> {
-                        val value = readUntil(doubleQuote)
-                        kvPairs += Pair(key, value)
-                        return parse(kvPairs)
-                    }
-                    leftBrace -> {
-                        unread(nextChar)
-                        kvPairs += Pair(key, parse())
-                        return parse(kvPairs)
-                    }
-                }
+            leftBrace -> {
+                return parseObject(props)
             }
             rightBrace -> {
-                return ObjectNode(kvPairs)
+                return ObjectNode(props)
             }
+            leftBracket -> {
+                elements += parse()
+                return parse(elements = elements)
+            }
+            rightBracket -> {
+                return ArrayNode(elements)
+            }
+            comma -> {
+                if (props.isNotEmpty()) {
+                    return parseObject(props)
+                }
+                if (elements.isNotEmpty()) {
+                    elements += parse()
+                    return parse(elements = elements)
+                }
+            }
+        }
+        return EmptyNode
+    }
+
+    private fun parseObject(props: ArrayList<Pair<String, Any?>>): Node {
+        readUntil(doubleQuote)
+        val key = readUntil(doubleQuote)
+        readUntil(colon)
+        skipWhiteSpace()
+        when (val nextChar = currentChar()) {
+            doubleQuote -> {
+                val value = readUntil(doubleQuote)
+                props += Pair(key, value)
+                return parse(props)
+            }
+            leftBrace -> {
+                unread(nextChar)
+                props += Pair(key, parse())
+                return parse(props)
+            }
+            else -> EmptyNode
         }
         return EmptyNode
     }
@@ -94,7 +121,7 @@ class Tokenizer(json: String) {
 
 fun main() {
     val json = """
-        {"name":{"firstName":"wael"},"age":"30"}
+        [{"name":"wael"},{"name":{"firstName":"wael"},"age":"30"}]
     """.trimIndent()
 
     val tokenizer = Tokenizer(json)
