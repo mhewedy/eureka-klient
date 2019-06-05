@@ -1,4 +1,4 @@
-package heplers.json
+package helpers.json
 
 import kotlin.reflect.KCallable
 import kotlin.reflect.KProperty1

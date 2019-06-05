@@ -1,12 +1,12 @@
-package heplers.json
+package helpers.json
 
-import heplers.json.Token.colon
-import heplers.json.Token.comma
-import heplers.json.Token.doubleQuote
-import heplers.json.Token.leftBrace
-import heplers.json.Token.leftBracket
-import heplers.json.Token.rightBrace
-import heplers.json.Token.rightBracket
+import helpers.json.Token.colon
+import helpers.json.Token.comma
+import helpers.json.Token.doubleQuote
+import helpers.json.Token.leftBrace
+import helpers.json.Token.leftBracket
+import helpers.json.Token.rightBrace
+import helpers.json.Token.rightBracket
 import java.io.Closeable
 import java.io.PushbackReader
 import java.io.StringWriter
@@ -130,7 +130,7 @@ class Parser(json: String) : Closeable {
 fun main() {
     //[[[{"name":"efg"},{"name":"efg"}]]]
     val json = """
-        [{"name":"efg"},{"name":"efg"}]
+        {"type":"1","model":[{"years":[{"name":"elephant","digits":"2019"},{"name":"joungle","digits":"2018"}]},{"years":[{"name":"donkey","digits":"2015"},{"name":"tiger","digits":"1009"}]}]}
     """.trimIndent()
 
     Parser(json).use {
