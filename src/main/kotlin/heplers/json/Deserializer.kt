@@ -36,7 +36,7 @@ class Tokenizer(json: String) {
         fun unread(char: Char) = reader.unread(char.toInt())
 
         when (currentChar()) {
-            leftBrace -> {
+            leftBrace, comma -> {
                 readUntil(doubleQuote)
                 val key = readUntil(doubleQuote)
                 readUntil(colon)
@@ -50,23 +50,13 @@ class Tokenizer(json: String) {
                     leftBrace -> {
                         unread(nextChar)
                         kvPairs += Pair(key, parse())
-                        return ObjectNode(kvPairs)
+                        return parse(kvPairs)
                     }
                 }
             }
             rightBrace -> {
                 return ObjectNode(kvPairs)
             }
-            comma -> {
-                readUntil(doubleQuote)
-                val key = readUntil(doubleQuote)
-                readUntil(colon)
-                readUntil(doubleQuote)
-                val value = readUntil(doubleQuote)
-                kvPairs += Pair(key, value)
-                return parse(kvPairs)
-            }
-
         }
         return EmptyNode()
     }
@@ -104,8 +94,13 @@ class Tokenizer(json: String) {
 
 fun main() {
     val json = """
-        {"name":{"firstName":"wael"}}
+        {"name":{"firstName":"wael"},"age":"30"}
     """.trimIndent()
+/*
+    val json = """
+        {"name":"morsi","age":"30"}
+    """.trimIndent()
+*/
 
     val tokenizer = Tokenizer(json)
 
