@@ -53,9 +53,13 @@ class ParserTest {
     fun `test parse can parse nested json object parsing`() {
 
         val json = """
-            {"name":{"firstName":"wael"},"age":"30"}
-        """.trimIndent()
-
+            {
+              "name": {
+                "firstName": "wael"
+              },
+              "age": "30"
+            }
+        """
         val actualNode = Parser(json).use {
             it.parse()
         }
@@ -75,8 +79,18 @@ class ParserTest {
     fun `test parse can parse list of nested json object parsing`() {
 
         val json = """
-            [{"name":"wael"},{"name":{"firstName":"wael"},"age":"30"}]
-        """.trimIndent()
+            [
+              {
+                "name": "wael"
+              },
+              {
+                "name": {
+                  "firstName": "wael"
+                },
+                "age": "30"
+              }
+            ]
+        """
 
         val actualNode = Parser(json).use {
             it.parse()
@@ -102,8 +116,20 @@ class ParserTest {
     fun `test parse array of array of array of objects`() {
 
         val json = """
-            [[[{"name":"abc","age":"30"},{"name":"efg"}]]]
-        """.trimIndent()
+            [
+              [
+                [
+                  {
+                    "name": "abc",
+                    "age": "30"
+                  },
+                  {
+                    "name": "efg"
+                  }
+                ]
+              ]
+            ]
+        """
 
         val actualNode = Parser(json).use {
             it.parse()
@@ -132,8 +158,21 @@ class ParserTest {
     fun `test parse object of array of objects`() {
 
         val json = """
-            {"occupations":[{"title":"Clark","grade":"10","salary":"300"},{"title":"Accountant","grade":"n/a","salary":"150"}]}
-        """.trimIndent()
+            {
+              "occupations": [
+                {
+                  "title": "Clark",
+                  "grade": "10",
+                  "salary": "300"
+                },
+                {
+                  "title": "Accountant",
+                  "grade": "n/a",
+                  "salary": "150"
+                }
+              ]
+            }
+        """
 
         val actualNode = Parser(json).use {
             it.parse()
@@ -157,8 +196,36 @@ class ParserTest {
     @Test
     fun `object of array of objects of array of objects`() {
         val json = """
-            {"type":"1","model":[{"years":[{"name":"elephant","digits":"2019"},{"name":"joungle","digits":"2018"}]},{"years":[{"name":"donkey","digits":"2015"},{"name":"tiger","digits":"1009"}]}]}
-        """.trimIndent()
+            {
+              "type": "1",
+              "model": [
+                {
+                  "years": [
+                    {
+                      "name": "elephant",
+                      "digits": "2019"
+                    },
+                    {
+                      "name": "joungle",
+                      "digits": "2018"
+                    }
+                  ]
+                },
+                {
+                  "years": [
+                    {
+                      "name": "donkey",
+                      "digits": "2015"
+                    },
+                    {
+                      "name": "tiger",
+                      "digits": "1009"
+                    }
+                  ]
+                }
+              ]
+            }
+        """
 
         val actualNode = Parser(json).use {
             it.parse()
