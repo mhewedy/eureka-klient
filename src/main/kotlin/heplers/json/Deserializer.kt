@@ -7,6 +7,7 @@ import heplers.json.Token.leftBrace
 import heplers.json.Token.leftBracket
 import heplers.json.Token.rightBrace
 import heplers.json.Token.rightBracket
+import java.io.Closeable
 import java.io.PushbackReader
 import java.io.StringWriter
 
@@ -29,7 +30,7 @@ object EmptyNode : Node()
 data class ObjectNode(val props: ArrayList<Pair<String, Any?>>) : Node()
 data class ArrayNode(val elements: ArrayList<Node>) : Node()
 
-class Tokenizer(json: String) {
+class Tokenizer(json: String) : Closeable {
     val reader = PushbackReader(json.reader())
 
     private fun currentChar() = reader.read().toChar()
@@ -48,23 +49,24 @@ class Tokenizer(json: String) {
                 return ObjectNode(props)
             }
             leftBracket -> {
-                elements += parse()
-                return parse(elements = elements)
+                return parseArray(elements)
             }
             rightBracket -> {
                 return ArrayNode(elements)
             }
             comma -> {
-                if (props.isNotEmpty()) {
+                if (props.isNotEmpty())
                     return parseObject(props)
-                }
-                if (elements.isNotEmpty()) {
-                    elements += parse()
-                    return parse(elements = elements)
-                }
+                if (elements.isNotEmpty())
+                    return parseArray(elements)
             }
         }
         return EmptyNode
+    }
+
+    private fun parseArray(elements: ArrayList<Node>): Node {
+        elements += parse()
+        return parse(elements = elements)
     }
 
     private fun parseObject(props: ArrayList<Pair<String, Any?>>): Node {
@@ -114,20 +116,17 @@ class Tokenizer(json: String) {
         reader.unread(char)
     }
 
-    fun close() {
+    override fun close() {
         reader.close()
     }
 }
 
 fun main() {
     val json = """
-        [{"name":"wael"},{"name":{"firstName":"wael"},"age":"30"}]
+        [[[{"name":"abc"},{"age":"efg"}]]]
     """.trimIndent()
 
-    val tokenizer = Tokenizer(json)
-
-    val node = tokenizer.parse()
-    println(node)
-
-    tokenizer.close()
+    Tokenizer(json).use {
+        println(it.parse())
+    }
 }

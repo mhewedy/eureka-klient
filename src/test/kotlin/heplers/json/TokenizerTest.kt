@@ -42,10 +42,10 @@ class TokenizerTest {
 
     @Test
     fun `test skip when not found`() {
-        val tokenizer = Tokenizer("hello")
-        tokenizer.skipWhiteSpace()
-        assertEquals("hello", tokenizer.reader.readText())
-        tokenizer.close()
+        Tokenizer("hello").use {
+            it.skipWhiteSpace()
+            assertEquals("hello", it.reader.readText())
+        }
     }
 
     @Test
@@ -55,9 +55,9 @@ class TokenizerTest {
             {"name":{"firstName":"wael"},"age":"30"}
         """.trimIndent()
 
-        val tokenizer = Tokenizer(json)
-        val actualNode = tokenizer.parse()
-        tokenizer.close()
+        val actualNode = Tokenizer(json).use {
+            it.parse()
+        }
 
         assertEquals(
             ObjectNode(
@@ -77,9 +77,9 @@ class TokenizerTest {
             [{"name":"wael"},{"name":{"firstName":"wael"},"age":"30"}]
         """.trimIndent()
 
-        val tokenizer = Tokenizer(json)
-        val actualNode = tokenizer.parse()
-        tokenizer.close()
+        val actualNode = Tokenizer(json).use {
+            it.parse()
+        }
 
         assertEquals(
             ArrayNode(
@@ -89,6 +89,36 @@ class TokenizerTest {
                         arrayListOf(
                             "name" to ObjectNode(arrayListOf("firstName" to "wael")),
                             "age" to "30"
+                        )
+                    )
+                )
+            ),
+            actualNode
+        )
+    }
+
+    @Test
+    fun `test parse array of array of array of objects`() {
+
+        val json = """
+            [[[{"name":"abc","age":"30"},{"name":"efg"}]]]
+        """.trimIndent()
+
+        val actualNode = Tokenizer(json).use {
+            it.parse()
+        }
+
+        assertEquals(
+            ArrayNode(
+                arrayListOf(
+                    ArrayNode(
+                        arrayListOf(
+                            ArrayNode(
+                                arrayListOf(
+                                    ObjectNode(arrayListOf("name" to "abc", "age" to "30")),
+                                    ObjectNode(arrayListOf("name" to "efg"))
+                                )
+                            )
                         )
                     )
                 )
