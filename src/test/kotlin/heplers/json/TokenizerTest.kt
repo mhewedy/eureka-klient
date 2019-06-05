@@ -47,4 +47,27 @@ class TokenizerTest {
         assertEquals("hello", tokenizer.reader.readText())
         tokenizer.close()
     }
+
+    @Test
+    fun `test parse can parse nested json object parsing`() {
+
+        val json = """
+            {"name":{"firstName":"wael"},"age":"30"}
+        """.trimIndent()
+
+        val tokenizer = Tokenizer(json)
+        val actualNode = tokenizer.parse()
+        tokenizer.close()
+
+        assertEquals(
+            ObjectNode(
+                arrayListOf(
+                    "name" to ObjectNode(arrayListOf("firstName" to "wael")),
+                    "age" to "30"
+                )
+            ),
+            actualNode
+        )
+
+    }
 }

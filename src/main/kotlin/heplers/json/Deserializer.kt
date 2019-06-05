@@ -24,7 +24,7 @@ private object Token {
 }
 
 sealed class Node
-class EmptyNode : Node()
+object EmptyNode : Node()
 data class ObjectNode(val kvPairs: ArrayList<Pair<String, Any?>>) : Node()
 data class ArrayNode(val elements: ObjectNode) : Node()
 
@@ -58,7 +58,7 @@ class Tokenizer(json: String) {
                 return ObjectNode(kvPairs)
             }
         }
-        return EmptyNode()
+        return EmptyNode
     }
 
     fun readUntil(delimiter: Char): String {
@@ -96,11 +96,6 @@ fun main() {
     val json = """
         {"name":{"firstName":"wael"},"age":"30"}
     """.trimIndent()
-/*
-    val json = """
-        {"name":"morsi","age":"30"}
-    """.trimIndent()
-*/
 
     val tokenizer = Tokenizer(json)
 
