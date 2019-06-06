@@ -439,4 +439,43 @@ class ParserTest {
             actualNode
         )
     }
+
+    @Test
+    fun `support all value types`() {
+        val json = """
+        {
+          "myArr": [
+            "a",
+            1,
+            {
+              "c": null
+            }
+          ],
+          "mySecondArr": true,
+          "myThirdArr": false
+        }
+        """
+
+        val actualNode = Parser(json).use {
+            it.parse()
+        }
+
+        assertEquals(
+            ObjectNode(
+                arrayListOf(
+                    "myArr" to ArrayNode(
+                        arrayListOf(
+                            ValueNode("a"),
+                            ValueNode(1.toDouble()),
+                            ObjectNode(arrayListOf("c" to null))
+                        )
+                    ),
+                    "mySecondArr" to true,
+                    "myThirdArr" to false
+                )
+            ),
+            actualNode
+        )
+
+    }
 }

@@ -58,11 +58,6 @@ class Parser(json: String) : Closeable {
             doubleQuote -> {
                 return ValueNode(readUntil(doubleQuote))
             }
-            in ('0'..'9') -> {
-                val number = readUntil(*postValueTokens)
-                unread(number.second)
-                return ValueNode((currentChar + number.first).toDouble())
-            }
             comma -> {
                 if (elements.isNotEmpty()) {
                     elements += parse(props)
@@ -72,6 +67,14 @@ class Parser(json: String) : Closeable {
                     return parseObject(props, elements)
                 }
             }
+            in ('0'..'9') -> {
+                val number = readUntil(*postValueTokens)
+                unread(number.second)
+                return ValueNode((currentChar + number.first).toDouble())
+            }
+            'n' -> return valueNode("null", null)
+            'f' -> return valueNode("false", false)
+            't' -> return valueNode("true", true)
         }
         return EmptyNode
     }
@@ -106,6 +109,18 @@ class Parser(json: String) : Closeable {
                 val number = readUntil(*postValueTokens)
                 unread(number.second)
                 props += Pair(key, (currentChar + number.first).toDouble())
+                return parse(props, elements)
+            }
+            'n' -> {
+                props += Pair(key, objectValue("null", null))
+                return parse(props, elements)
+            }
+            'f' -> {
+                props += Pair(key, objectValue("false", false))
+                return parse(props, elements)
+            }
+            't' -> {
+                props += Pair(key, objectValue("true", true))
                 return parse(props, elements)
             }
         }
@@ -153,14 +168,37 @@ class Parser(json: String) : Closeable {
         reader.unread(char)
     }
 
+    private fun objectValue(_valueToCheck: String, value: Any?): Any? {
+        val valueToCheck = _valueToCheck.drop(1)
+        val charArr = CharArray(valueToCheck.length)
+        reader.read(charArr)
+
+        if (charArr.contentEquals(valueToCheck.toCharArray())) {
+            return value
+        } else
+            throw Exception("invalid constant value: $valueToCheck")
+    }
+
+    private fun valueNode(_valueToCheck: String, value: Any?): ValueNode {
+        val valueToCheck = _valueToCheck.drop(1)
+        val charArr = CharArray(valueToCheck.length)
+        reader.read(charArr)
+
+        if (charArr.contentEquals(valueToCheck.toCharArray())) {
+            return ValueNode(value)
+        }
+        throw Exception("invalid constant value: $valueToCheck")
+    }
+
     override fun close() {
         reader.close()
     }
 }
 
 fun main() {
+    //{"age": true}
     val json = """
-        {"age": 30 }
+        [false, true, null]
         """
 
     Parser(json).use {
