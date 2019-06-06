@@ -1,5 +1,6 @@
 package helpers
 
+import helpers.json.Parser
 import helpers.json.toJson
 import java.net.HttpURLConnection
 import java.net.URL
@@ -45,12 +46,16 @@ fun main() {
     val post = Post(userId = 123, id = 456, title = "post title", body = "post body")
     post("https://jsonplaceholder.typicode.com/posts", post) {
         println(responseCode)
-        println(responseText)
+        Parser(responseText).use {  // json strings with backslash escape character for double quotes are not supported
+            println(it.parse())
+        }
     }
 
     get("https://jsonplaceholder.typicode.com/posts") {
-        print(responseCode)
-        println(responseText)
+        println(responseCode)
+        Parser(responseText).use {
+            println(it.parse())
+        }
     }
 }
 

@@ -10,6 +10,7 @@ import helpers.json.Token.rightBracket
 import java.io.Closeable
 import java.io.PushbackReader
 import java.io.StringWriter
+import kotlin.reflect.full.memberProperties
 
 // 1: writing tokenizer
 // 2: building AST
@@ -186,26 +187,22 @@ class Parser(json: String) : Closeable {
     }
 }
 
-fun main() {
-    //{"age": true}
-    val json = """
-        {"menu": {
-          "id": "file",
-          "value": "File",
-          "popup": {
-            "menuitem": [
-              {"value": "New", "onclick": "CreateNewDoc()"},
-              {"value": "Open", "onclick": "OpenDoc()"},
-              {"value": "Close", "onclick": "CloseDoc()"}
-            ]
-          }
-        }}
 
-        """
-
-    Parser(json).use {
-        val result = it.parse()
-        println(result)
-        //ObjectNode(props=[(menu, ObjectNode(props=[(id, file), (value, File), (popup, ObjectNode(props=[(menuitem, ArrayNode(elements=[ObjectNode(props=[(value, New), (onclick, CreateNewDoc())]), ObjectNode(props=[(value, Open), (onclick, OpenDoc())]), ObjectNode(props=[(value, Close), (onclick, CloseDoc())])]))]))]))])
+fun Any.fromJson(json: String): Unit {
+    val node = Parser(json).use {
+        it.parse()
     }
+
+    this::class.memberProperties
+        .map {
+            it.returnType
+        }
+}
+
+private fun toObject(objectNode: ObjectNode): Any {
+    TODO()
+}
+
+private fun toArrayList(arrayNode: ArrayNode): ArrayList<Any> {
+    TODO()
 }
