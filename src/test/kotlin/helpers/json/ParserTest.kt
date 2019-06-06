@@ -385,4 +385,31 @@ class ParserTest {
         val objNothing = arrayNode.elements[0] as ObjectNode
         assertEquals(objNothing.props[1].second, "org.cofax.cds.CDSServlet")
     }
+
+    @Test
+    fun `supporting value nodes`() {
+
+        val json = """
+        {"myArr": ["a", "b", {"c":  "d"}]}
+        """
+
+        val actualNode = Parser(json).use {
+            it.parse()
+        }
+
+        assertEquals(
+            ObjectNode(
+                arrayListOf(
+                    "myArr" to ArrayNode(
+                        arrayListOf(
+                            ValueNode("a"),
+                            ValueNode("b"),
+                            ObjectNode(arrayListOf("c" to "d"))
+                        )
+                    )
+                )
+            ),
+            actualNode
+        )
+    }
 }
