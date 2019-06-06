@@ -31,6 +31,8 @@ data class ValueNode(val value: Any?) : Node()
 data class ObjectNode(val props: ArrayList<Pair<String, Any?>>) : Node()
 data class ArrayNode(val elements: ArrayList<Node>) : Node()
 
+val postValueTokens = charArrayOf(comma, rightBracket, rightBrace)
+
 class Parser(json: String) : Closeable {
     val reader = PushbackReader(json.reader())
 
@@ -39,7 +41,7 @@ class Parser(json: String) : Closeable {
         elements: ArrayList<Node> = arrayListOf()
     ): Node {
 
-        when (currentChar()) {
+        when (val currentChar = currentChar()) {
             leftBrace -> {
                 return parseObject(elements = elements)
             }
@@ -55,6 +57,11 @@ class Parser(json: String) : Closeable {
             }
             doubleQuote -> {
                 return ValueNode(readUntil(doubleQuote))
+            }
+            in ('0'..'9') -> {
+                val number = readUntil(*postValueTokens)
+                unread(number.second)
+                return ValueNode((currentChar + number.first).toDouble())
             }
             comma -> {
                 if (elements.isNotEmpty()) {
@@ -73,18 +80,20 @@ class Parser(json: String) : Closeable {
         props: ArrayList<Pair<String, Any?>> = arrayListOf(),
         elements: ArrayList<Node> = arrayListOf()
     ): Node {
+
         readUntil(doubleQuote)
         val key = readUntil(doubleQuote)
         readUntil(colon)
         skipWhiteSpaces()
-        when (val nextChar = currentChar()) {
+
+        when (val currentChar = currentChar()) {
             doubleQuote -> {
                 val value = readUntil(doubleQuote)
                 props += Pair(key, value)
                 return parse(props, elements)
             }
             leftBrace -> {
-                unread(nextChar)
+                unread(currentChar)
                 props += Pair(key, parse(elements = elements))
                 return parse(props, elements)
             }
@@ -92,6 +101,12 @@ class Parser(json: String) : Closeable {
                 elements += parse(props)
                 props += Pair(key, parse(elements = elements))
                 return parse(props)
+            }
+            in ('0'..'9') -> {
+                val number = readUntil(*postValueTokens)
+                unread(number.second)
+                props += Pair(key, (currentChar + number.first).toDouble())
+                return parse(props, elements)
             }
         }
         return EmptyNode
@@ -106,6 +121,14 @@ class Parser(json: String) : Closeable {
 
     fun readUntil(delimiter: Char): String {
         return readUntil { it == delimiter }
+    }
+
+    fun readUntil(vararg delimiters: Char): Pair<String, Char> {
+        var char = '\u0000'
+        return readUntil {
+            char = it
+            it in delimiters
+        } to char
     }
 
     private fun readUntil(stopFn: (Char) -> Boolean): String {
@@ -137,7 +160,7 @@ class Parser(json: String) : Closeable {
 
 fun main() {
     val json = """
-        {"myArr": ["a", "b", {"c":  "d"}]}
+        {"age": 30 }
         """
 
     Parser(json).use {

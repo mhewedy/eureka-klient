@@ -412,4 +412,31 @@ class ParserTest {
             actualNode
         )
     }
+
+    @Test
+    fun `supporting numbers `() {
+
+        val json = """
+        {"myArr": ["a", 1, {"c":  2}]}
+        """
+
+        val actualNode = Parser(json).use {
+            it.parse()
+        }
+
+        assertEquals(
+            ObjectNode(
+                arrayListOf(
+                    "myArr" to ArrayNode(
+                        arrayListOf(
+                            ValueNode("a"),
+                            ValueNode(1.toDouble()),
+                            ObjectNode(arrayListOf("c" to 2.toDouble()))
+                        )
+                    )
+                )
+            ),
+            actualNode
+        )
+    }
 }
