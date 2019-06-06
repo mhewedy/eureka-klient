@@ -56,7 +56,7 @@ class Parser(json: String) : Closeable {
                 return ArrayNode(elements)
             }
             doubleQuote -> {
-                return ValueNode(readUntil(doubleQuote))
+                return ValueNode(readUntil(doubleQuote).first)
             }
             comma -> {
                 if (elements.isNotEmpty()) {
@@ -85,13 +85,12 @@ class Parser(json: String) : Closeable {
     ): Node {
 
         readUntil(doubleQuote)
-        val key = readUntil(doubleQuote)
+        val key = readUntil(doubleQuote).first
         readUntil(colon)
-        skipWhiteSpaces()
 
         when (val currentChar = currentChar()) {
             doubleQuote -> {
-                val value = readUntil(doubleQuote)
+                val value = readUntil(doubleQuote).first
                 props += Pair(key, value)
                 return parse(props, elements)
             }
@@ -128,15 +127,11 @@ class Parser(json: String) : Closeable {
     }
 
     private fun currentChar(): Char {
-        skipWhiteSpaces()
+        skip { it.isWhitespace() }
         return reader.read().toChar()
     }
 
     private fun unread(char: Char) = reader.unread(char.toInt())
-
-    fun readUntil(delimiter: Char): String {
-        return readUntil { it == delimiter }
-    }
 
     fun readUntil(vararg delimiters: Char): Pair<String, Char> {
         var char = '\u0000'
@@ -156,11 +151,7 @@ class Parser(json: String) : Closeable {
         return out.toString()
     }
 
-    fun skipWhiteSpaces() {
-        skip { it.isWhitespace() }
-    }
-
-    private fun skip(continueFn: (Char) -> Boolean) {
+    fun skip(continueFn: (Char) -> Boolean) {
         var char = reader.read()
         while (char > 0 && continueFn(char.toChar())) {
             char = reader.read()
@@ -198,11 +189,23 @@ class Parser(json: String) : Closeable {
 fun main() {
     //{"age": true}
     val json = """
-        [false, true, null]
+        {"menu": {
+          "id": "file",
+          "value": "File",
+          "popup": {
+            "menuitem": [
+              {"value": "New", "onclick": "CreateNewDoc()"},
+              {"value": "Open", "onclick": "OpenDoc()"},
+              {"value": "Close", "onclick": "CloseDoc()"}
+            ]
+          }
+        }}
+
         """
 
     Parser(json).use {
         val result = it.parse()
         println(result)
+        //ObjectNode(props=[(menu, ObjectNode(props=[(id, file), (value, File), (popup, ObjectNode(props=[(menuitem, ArrayNode(elements=[ObjectNode(props=[(value, New), (onclick, CreateNewDoc())]), ObjectNode(props=[(value, Open), (onclick, OpenDoc())]), ObjectNode(props=[(value, Close), (onclick, CloseDoc())])]))]))]))])
     }
 }

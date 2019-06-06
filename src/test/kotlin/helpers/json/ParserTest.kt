@@ -10,7 +10,7 @@ class ParserTest {
     @Test
     fun `test readUntil`() {
         val parser = Parser("this is the value \"stop use it")
-        val beforeDelimiter = parser.readUntil('"')
+        val beforeDelimiter = parser.readUntil('"').first
         val rest = parser.reader.readText()
         parser.close()
 
@@ -21,7 +21,7 @@ class ParserTest {
     @Test
     fun `test readUntil not found`() {
         val parser = Parser("this is the value \"stop use it")
-        val beforeDelimiter = parser.readUntil('X')
+        val beforeDelimiter = parser.readUntil('X').first
         parser.close()
         assertEquals("this is the value \"stop use it", beforeDelimiter)
     }
@@ -29,7 +29,7 @@ class ParserTest {
     @Test
     fun `test skip when found`() {
         val parser = Parser("   hello")
-        parser.skipWhiteSpaces()
+        parser.skip { it.isWhitespace() }
         assertEquals("hello", parser.reader.readText())
         parser.close()
     }
@@ -37,7 +37,7 @@ class ParserTest {
     @Test
     fun `test skip white space when found`() {
         val parser = Parser("\nhello")
-        parser.skipWhiteSpaces()
+        parser.skip { it.isWhitespace() }
         assertEquals("hello", parser.reader.readText())
         parser.close()
     }
@@ -45,7 +45,7 @@ class ParserTest {
     @Test
     fun `test skip when not found`() {
         Parser("hello").use {
-            it.skipWhiteSpaces()
+            it.skip { it.isWhitespace() }
             assertEquals("hello", it.reader.readText())
         }
     }
