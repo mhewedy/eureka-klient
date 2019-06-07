@@ -126,12 +126,45 @@ class Parser(json: String) : Closeable {
         return EmptyNode
     }
 
-    private fun currentChar(): Char {
-        skip { it.isWhitespace() }
-        return reader.read().toChar()
+    private fun objectValue(_valueToCheck: String, value: Any?): Any? {
+        val valueToCheck = _valueToCheck.drop(1)
+        val charArr = read(valueToCheck.length)
+
+        if (charArr.contentEquals(valueToCheck.toCharArray())) {
+            return value
+        } else
+            throw Exception("invalid constant value: $valueToCheck")
+    }
+
+    private fun valueNode(_valueToCheck: String, value: Any?): ValueNode {
+        val valueToCheck = _valueToCheck.drop(1)
+        val charArr = read(valueToCheck.length)
+
+        if (charArr.contentEquals(valueToCheck.toCharArray())) {
+            return ValueNode(value)
+        }
+        throw Exception("invalid constant value: $valueToCheck")
+    }
+
+    // read util
+    private fun read() = reader.read()
+
+    private fun read(length: Int): CharArray {
+        val charArr = CharArray(length)
+        reader.read(charArr)
+        return charArr
     }
 
     private fun unread(char: Char) = reader.unread(char.toInt())
+
+    // ~ read util
+
+    // selective read util
+
+    private fun currentChar(): Char {
+        skip { it.isWhitespace() }
+        return read().toChar()
+    }
 
     fun readUntil(vararg delimiters: Char): Pair<String, Char> {
         var char = '\u0000'
@@ -143,43 +176,23 @@ class Parser(json: String) : Closeable {
 
     private fun readUntil(stopFn: (Char) -> Boolean): String {
         val out = StringWriter()
-        var char = reader.read()
+        var char = read()
         while (char > 0 && !stopFn(char.toChar())) {
             out.write(char)
-            char = reader.read()
+            char = read()
         }
         return out.toString()
     }
 
     fun skip(continueFn: (Char) -> Boolean) {
-        var char = reader.read()
+        var char = read()
         while (char > 0 && continueFn(char.toChar())) {
-            char = reader.read()
+            char = read()
         }
-        reader.unread(char)
+        unread(char.toChar())
     }
 
-    private fun objectValue(_valueToCheck: String, value: Any?): Any? {
-        val valueToCheck = _valueToCheck.drop(1)
-        val charArr = CharArray(valueToCheck.length)
-        reader.read(charArr)
-
-        if (charArr.contentEquals(valueToCheck.toCharArray())) {
-            return value
-        } else
-            throw Exception("invalid constant value: $valueToCheck")
-    }
-
-    private fun valueNode(_valueToCheck: String, value: Any?): ValueNode {
-        val valueToCheck = _valueToCheck.drop(1)
-        val charArr = CharArray(valueToCheck.length)
-        reader.read(charArr)
-
-        if (charArr.contentEquals(valueToCheck.toCharArray())) {
-            return ValueNode(value)
-        }
-        throw Exception("invalid constant value: $valueToCheck")
-    }
+    // ~ selective read util
 
     override fun close() {
         reader.close()
@@ -189,17 +202,7 @@ class Parser(json: String) : Closeable {
 fun main() {
     //{"age": true}
     val json = """
-        {"menu": {
-          "id": "file",
-          "value": "File",
-          "popup": {
-            "menuitem": [
-              {"value": "New", "onclick": "CreateNewDoc()"},
-              {"value": "Open", "onclick": "OpenDoc()"},
-              {"value": "Close", "onclick": "CloseDoc()"}
-            ]
-          }
-        }}
+        {"menu": "\"hello\""}
 
         """
 
