@@ -36,6 +36,9 @@ val postValueTokens = charArrayOf(comma, rightBracket, rightBrace)
 class Parser(json: String) : Closeable {
     val reader = PushbackReader(json.reader())
 
+    private var prevChar: Char? = null
+    private var currentChar: Char? = null
+
     fun parse(
         props: ArrayList<Pair<String, Any?>> = arrayListOf(),
         elements: ArrayList<Node> = arrayListOf()
@@ -147,15 +150,25 @@ class Parser(json: String) : Closeable {
     }
 
     // read util
-    private fun read() = reader.read()
+    private fun read(): Int {
+        prevChar = currentChar
+        val char = reader.read()
+        currentChar = char.toChar()
+        return char
+    }
 
     private fun read(length: Int): CharArray {
+        prevChar = currentChar
         val charArr = CharArray(length)
         reader.read(charArr)
+        currentChar = charArr.last()
         return charArr
     }
 
-    private fun unread(char: Char) = reader.unread(char.toInt())
+    private fun unread(char: Char) {
+        currentChar = prevChar
+        reader.unread(char.toInt())
+    }
 
     // ~ read util
 
@@ -170,7 +183,7 @@ class Parser(json: String) : Closeable {
         var char = '\u0000'
         return readUntil {
             char = it
-            it in delimiters
+            it in delimiters && prevChar != '\\'
         } to char
     }
 
@@ -196,14 +209,15 @@ class Parser(json: String) : Closeable {
 
     override fun close() {
         reader.close()
+        prevChar = null
+        currentChar = null
     }
 }
 
 fun main() {
     //{"age": true}
     val json = """
-        {"menu": "\"hello\""}
-
+        ["\u1F602 hello"]
         """
 
     Parser(json).use {

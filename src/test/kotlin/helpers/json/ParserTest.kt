@@ -478,4 +478,29 @@ class ParserTest {
         )
 
     }
+
+    @Test
+    fun `support escaped characters using backslash`() {
+        val json = """
+            ["\"hello\"", {"\"key\"":"value"}]
+        """
+
+        val actualNode = Parser(json).use {
+            it.parse()
+        }
+
+        assertEquals(
+            ArrayNode(
+                arrayListOf(
+                    ValueNode("\\\"hello\\\""),
+                    ObjectNode(
+                        arrayListOf(
+                            "\\\"key\\\"" to "value"
+                        )
+                    )
+                )
+            ),
+            actualNode
+        )
+    }
 }
