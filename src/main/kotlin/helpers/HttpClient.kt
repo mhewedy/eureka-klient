@@ -46,7 +46,7 @@ fun main() {
     val post = Post(userId = 123, id = 456, title = "post title", body = "post body")
     post("https://jsonplaceholder.typicode.com/posts", post) {
         println(responseCode)
-        Parser(responseText).use {  // json strings with backslash escape character for double quotes are not supported
+        Parser(responseText).use {
             println(it.parse())
         }
     }
