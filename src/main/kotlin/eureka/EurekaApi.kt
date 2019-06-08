@@ -14,7 +14,7 @@ class EurekaApiImpl : EurekaApi {
 
     override fun register(appName: String, instanceInfo: InstanceInfo) {
         post("$apiBaseUrl/apps/$appName", instanceInfo) {
-            if (responseCode != 204) throw Exception(responseText)
+            if (httpCode != 204) throw Exception(rawResponse)
         }
     }
 }
