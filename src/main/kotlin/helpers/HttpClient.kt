@@ -2,6 +2,8 @@ package helpers
 
 import helpers.json.Parser
 import helpers.json.toJson
+import java.io.IOException
+import java.io.StringReader
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -9,22 +11,45 @@ enum class Method { GET, POST, PUT, DELETE }
 
 data class Response<R>(val responseCode: Int, val responseText: R)
 
-fun get(url: String, response: Response<String>.() -> Unit) =
-    execute(url, Method.GET, request = null, response = response)
+fun get(
+    url: String, headers: Array<Pair<String, String>> = emptyArray(),
+    response: Response<String>.() -> Unit
+) =
+    execute(url, Method.GET, request = null, headers = headers, response = response)
 
-fun <T> post(url: String, request: T? = null, response: Response<String>.() -> Unit) =
-    execute(url, Method.POST, request, response = response)
+fun <T> post(
+    url: String, request: T? = null,
+    headers: Array<Pair<String, String>> = emptyArray(),
+    response: Response<String>.() -> Unit
+) =
+    execute(url, Method.POST, request, headers = headers, response = response)
 
-fun <T> put(url: String, request: T? = null, response: Response<String>.() -> Unit) =
-    execute(url, Method.PUT, request, response = response)
+fun <T> put(
+    url: String,
+    request: T? = null,
+    headers: Array<Pair<String, String>> = emptyArray(),
+    response: Response<String>.() -> Unit
+) =
+    execute(url, Method.PUT, request, headers = headers, response = response)
 
-fun <T> delete(url: String, request: T? = null, response: Response<String>.() -> Unit) =
-    execute(url, Method.DELETE, request, response = response)
+fun <T> delete(
+    url: String,
+    request: T? = null,
+    headers: Array<Pair<String, String>> = emptyArray(),
+    response: Response<String>.() -> Unit
+) =
+    execute(url, Method.DELETE, request, headers = headers, response = response)
 
-fun <T> execute(url: String, method: Method, request: T? = null, response: Response<String>.() -> Unit) {
+fun <T> execute(
+    url: String, method: Method, request: T? = null,
+    headers: Array<Pair<String, String>> = emptyArray(),
+    response: Response<String>.() -> Unit
+) {
 
     with(URL(url).openConnection() as HttpURLConnection) {
         requestMethod = method.name
+
+        headers.forEach { addRequestProperty(it.first, it.second) }
 
         if (method in arrayOf(Method.POST, Method.PUT, Method.DELETE)) {
             request?.let {
@@ -35,12 +60,17 @@ fun <T> execute(url: String, method: Method, request: T? = null, response: Respo
                 outputStream.close()
             }
         }
-        val responseText = inputStream.bufferedReader().readText()
-        inputStream.close()
 
-        response.invoke(Response(responseCode, responseText))
+        val reader = try {
+            inputStream.bufferedReader()
+        } catch (ex: IOException) {
+            StringReader(ex.message)
+        }
+        response.invoke(Response(responseCode, reader.use { it.readText() }))
     }
 }
+
+// -- TESTING ....
 
 fun main() {
     data class Post(val userId: Int, val id: Int, val title: String, val body: String)

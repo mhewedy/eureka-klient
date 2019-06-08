@@ -1,8 +1,8 @@
 package eureka
 
-data class Wrapper(val instance: Instance)
+data class InstanceInfo(val instance: Instance)
 
-class Instance(
+data class Instance(
     val instanceId: String,
     val hostName: String,
     val app: String,
@@ -22,20 +22,21 @@ class Instance(
     val metadata: AppMetadataType? = null
 )
 
-class Port(val `$`: Int, val `@enabled`: String)
+data class Port(val `$`: Int, val `@enabled`: String)
 
-class DataCenterInfo(
+data class DataCenterInfo(
     val name: DcNameType,
     val `@class`: String,
     val metadata: AmazonMetdataType? = null
 )
 
-class LeaseInfo(val evictionDurationInSecs: Long? = null)
+data class LeaseInfo(val evictionDurationInSecs: Long? = null)
 
 enum class DcNameType(val value: String) {
     MY_OWN("MyOwn"),
     AMAZON("Amazon");
 
+    // override toJson by the serializer
     fun toJson() = """"$value""""
 }
 
@@ -47,7 +48,7 @@ enum class StatusType {
     UNKNOWN;
 }
 
-class AmazonMetdataType(
+data class AmazonMetdataType(
     val amiLaunchIndex: String,
     val localHostname: String,
     val availabilityZone: String,
@@ -61,4 +62,4 @@ class AmazonMetdataType(
     val instanceType: String
 )
 
-class AppMetadataType(val any: Map<String, Any?>?)
+data class AppMetadataType(val any: Map<String, Any?>?)
