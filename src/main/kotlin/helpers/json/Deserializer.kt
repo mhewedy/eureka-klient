@@ -25,13 +25,13 @@ private object Token {
     const val colon = ':'
 }
 
+val postValueTokens = charArrayOf(comma, rightBracket, rightBrace)
+
 sealed class Node
 object EmptyNode : Node()
 data class ValueNode(val value: Any?) : Node()
 data class ObjectNode(val props: ArrayList<Pair<String, Any?>>) : Node()
 data class ArrayNode(val elements: ArrayList<Node>) : Node()
-
-val postValueTokens = charArrayOf(comma, rightBracket, rightBrace)
 
 class Parser(json: String) : Closeable {
     val reader = PushbackReader(json.reader())
