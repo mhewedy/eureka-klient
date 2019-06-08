@@ -40,7 +40,7 @@ fun main() {
             healthCheckUrl = "http://localhost/health-check-url",
             dataCenterInfo = DataCenterInfo(
                 DcNameType.MY_OWN,
-                "com.netflix.appinfo.MyDataCenterInfo"
+                "com.netflix.appinfo.InstanceInfo\$DefaultDataCenterInfo"
             )
         )
     )

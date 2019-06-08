@@ -31,7 +31,7 @@ fun <T> execute(url: String, method: Method, request: T? = null, response: Respo
                 addRequestProperty("Content-Type", "application/json")
                 addRequestProperty("Accept", "application/json")
                 doOutput = true
-                outputStream.write(request.toJson()?.toByteArray())
+                outputStream.write(request.toJson(ignoreNull = true)?.toByteArray())
                 outputStream.close()
             }
         }
