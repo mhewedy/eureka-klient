@@ -2,7 +2,7 @@ package eureka
 
 import helpers.post
 
-const val apiBaseUrl = "http://localhost:8761/eureka"
+const val apiBaseUrl = "http://localhost:8080/eureka"
 
 interface EurekaApi {
     fun register(appName: String, instanceInfo: InstanceInfo)
