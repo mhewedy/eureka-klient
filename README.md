@@ -20,7 +20,20 @@ Found in `eureka.EurekaApi.kt` file, currently only the `register` function is a
 ### How to use:
 1. Install eureka server (I've used spring-cloud wrapper from [start.spring.io](https://start.spring.io/starter.zip?type=maven-project&language=java&bootVersion=2.1.5.RELEASE&baseDir=eurekaserver&groupId=com.example&artifactId=eurekaserver&name=eurekaserver&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.eurekaserver&packaging=jar&javaVersion=1.8&style=cloud-eureka-server)), you can use it to.
 
-  * After extract the zip file, go to the `EurekaserverApplication` and add annotation: `@org.springframework.cloud.netflix.eureka.server.EnableEurekaServer`  on top of `EurekaserverApplication` and run the main function to start the server.
+  * After extract the zip file, go to the `EurekaserverApplication` and add annotation: `@org.springframework.cloud.netflix.eureka.server.EnableEurekaServer`  on top of `EurekaserverApplication` :
+  ```java
+ @org.springframework.cloud.netflix.eureka.server.EnableEurekaServer
+ @SpringBootApplication
+ public class EurekaserverApplication {
+
+     public static void main(String[] args) {
+         SpringApplication.run(EurekaserverApplication.class, args);
+     }
+
+ }
+ ```
+  * Now run:
+  `mvn spring-boot:run`
  
 2. In `eureka-klient`, go to: `main.kt` file and run the `main` function to start the client.
 3. Now go to http://localhost:8080 and check your app is registered.
