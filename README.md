@@ -36,7 +36,31 @@ Found in `eureka.EurekaApi.kt` file, currently only the `register` function is a
   `mvn spring-boot:run`
  
 2. In `eureka-klient`, go to: `main.kt` file and run the `main` function to start the client.
-3. Now go to http://localhost:8080 and check your app is registered.
+3. Now go to http://localhost:8080 and check your app is registered. You can verify apps are registered using:
+`curl -H 'Accept: application/json'  http://localhost:8080/eureka/apps | jq`
+you will got output similar to:
+```js
+{
+  "applications": {
+    "versions__delta": "1",
+    "apps__hashcode": "UP_2_",
+    "application": [
+      {
+        "name": "MYSERVICE",
+        "instance": [
+          {
+            "instanceId": "192.168.1.10",
+            "hostName": "192.168.1.10",
+            "app": "MYSERVICE",
+            "ipAddr": "192.168.1.10",
+            "status": "UP",
+            "overriddenStatus": "UNKNOWN",
+            "port": {
+              "$": 8089,
+              "@enabled": "true"
+            },
+            // ....... rest of json string ....... 
+```
 
 ### Why?
 I am working on app with bloated unnecessary services that most of the time is just pain-in-the-head to got all of the them running and registered to the eureka registery to do absloutly nothing. So I decided to write a simple client that can work as a drop-in replacemnt.
