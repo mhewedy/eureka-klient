@@ -8,6 +8,10 @@ import java.io.StringReader
 import java.net.HttpURLConnection
 import java.net.URL
 
+const val ACCEPT = "ACCEPT"
+const val CONTENT_TYPE = "Content-Type"
+const val APPLICATION_JSON = "application/json"
+
 enum class Method { GET, POST, PUT, DELETE }
 
 data class Response<R>(val httpCode: Int, val rawResponse: String, val response: R)
@@ -50,8 +54,8 @@ fun <T> execute(
 
         if (method in arrayOf(Method.POST, Method.PUT, Method.DELETE)) {
             request?.let {
-                addRequestProperty("Content-Type", "application/json")
-                addRequestProperty("Accept", "application/json")
+                addRequestProperty(ACCEPT, APPLICATION_JSON)
+                addRequestProperty(CONTENT_TYPE, APPLICATION_JSON)
                 doOutput = true
                 outputStream.write(request.toJson(ignoreNull = true)?.toByteArray())
                 outputStream.close()
