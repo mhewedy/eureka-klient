@@ -24,7 +24,7 @@ private val numberTypes by lazy {
     )
 }
 
-fun serialize(obj: Any?): String? = obj?.let {
+fun serialize(obj: Any?, ignoreNull: Boolean): String? = obj?.let {
 
     val jsonStr = callToJsonFunction(obj)
     if (jsonStr != null)
@@ -35,7 +35,9 @@ fun serialize(obj: Any?): String? = obj?.let {
 
     if (properties.isNotEmpty()) {
         return@let properties
-            .map { serialize(obj, it) }
+            .map { serialize(obj, it, ignoreNull) }
+            .filter { !ignoreNull || it != null }
+            .filterNotNull()
             .joinToString(prefix = "{", separator = ",", postfix = "}")
     }
 
@@ -46,20 +48,22 @@ fun serialize(obj: Any?): String? = obj?.let {
     return@let null
 }
 
-fun serialize(obj: Any?, property: KCallable<*>): String {
+fun serialize(obj: Any?, property: KCallable<*>, ignoreNull: Boolean): String? {
     val value = when {
         property.returnType in numberTypes -> property.call(obj)
         property.returnType in stringType -> (property.call(obj) as String?)?.doubleQuote()
         property.returnType.arguments.isNotEmpty()
-                && isCollection(property.returnType) -> serializeCollection(property, obj)
-        else -> serialize(property.call(obj))
+                && isCollection(property.returnType) -> serializeCollection(property, obj, ignoreNull)
+        else -> serialize(property.call(obj), ignoreNull)
     }
-    return property.name.doubleQuote() + ":" + value
+
+    return if (ignoreNull && value == null) null
+    else property.name.doubleQuote() + ":" + value
 }
 
-fun serializeCollection(property: KCallable<*>, obj: Any?) =
+fun serializeCollection(property: KCallable<*>, obj: Any?, ignoreNull: Boolean) =
     (property.call(obj) as Collection<*>)
-        .map { serialize(it) }
+        .map { serialize(it, ignoreNull) }
         .joinToString(prefix = "[", separator = ",", postfix = "]")
 
 private fun isProperty(obj: Any?, it: KCallable<*>): Boolean {
@@ -91,6 +95,6 @@ private fun callToJsonFunction(obj: Any?): String? = obj?.let {
  * It can be customized by providing a member function [toJson(): String]
  * for any object in the object graph
  */
-fun Any.toJson(): String? = serialize(this)
+fun Any.toJson(ignoreNull: Boolean = false): String? = serialize(this, ignoreNull)
 
 fun String.doubleQuote() = """"$this""""

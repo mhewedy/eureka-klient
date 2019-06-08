@@ -30,6 +30,8 @@ class LeaseInfo(var evictionDurationInSecs: Long? = null)
 enum class DcNameType(val value: String) {
     MY_OWN("MyOwn"),
     AMAZON("Amazon");
+
+    fun toJson() = """"$value""""
 }
 
 enum class StatusType {

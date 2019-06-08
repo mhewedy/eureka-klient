@@ -17,7 +17,8 @@ class SerializerTest {
         assertEquals(
             """"x":10""", serialize(
                 intDummy,
-                intDummy::class.declaredMembers.first()
+                intDummy::class.declaredMembers.first(),
+                false
             )
         )
 
@@ -25,7 +26,8 @@ class SerializerTest {
         assertEquals(
             """"x":10.4""", serialize(
                 floatDummy,
-                floatDummy::class.declaredMembers.first()
+                floatDummy::class.declaredMembers.first(),
+                false
             )
         )
     }
@@ -38,7 +40,8 @@ class SerializerTest {
         assertEquals(
             """"s":"Yes"""", serialize(
                 stringDummy,
-                stringDummy::class.declaredMembers.first()
+                stringDummy::class.declaredMembers.first(),
+                false
             )
         )
     }
@@ -46,7 +49,7 @@ class SerializerTest {
     @Test
     fun `can serialize object of one primitive`() {
         class StringDummy(val s: String = "Yes")
-        assertEquals("""{"s":"Yes"}""", serialize(StringDummy()))
+        assertEquals("""{"s":"Yes"}""", serialize(StringDummy(), false))
     }
 
     @Test
@@ -56,7 +59,7 @@ class SerializerTest {
 
         val user = User("ali", 30)
         val course = Course(user)
-        assertEquals("""{"user":{"age":30,"name":"ali"}}""", serialize(course))
+        assertEquals("""{"user":{"age":30,"name":"ali"}}""", serialize(course, false))
     }
 
     @Test
@@ -67,7 +70,7 @@ class SerializerTest {
         val course = Course(arrayListOf(User("ali", 30), User("mostafa", 20), User("monsour", 40)))
         assertEquals(
             """{"users":[{"age":30,"name":"ali"},{"age":20,"name":"mostafa"},{"age":40,"name":"monsour"}]}""",
-            serialize(course)
+            serialize(course, false)
         )
     }
 
@@ -86,7 +89,7 @@ class SerializerTest {
     @Test
     fun `can serialize object of one nullable primitive`() {
         class StringDummy(val s: String? = "Yes")
-        assertEquals("""{"s":"Yes"}""", serialize(StringDummy()))
+        assertEquals("""{"s":"Yes"}""", serialize(StringDummy(), false))
     }
 
     @Test
