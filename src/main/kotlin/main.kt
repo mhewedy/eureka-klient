@@ -7,11 +7,13 @@ import java.net.Socket
  * see READEME.md for more details.
  *
  */
-fun main() {
+fun main(args: Array<String>) {
+
     val eurekaApi = EurekaApiImpl()
 
     val myIP = getMyIPAddr()
-    val appName = "eureka-klient"
+    val appName = getopt(args, 0, "eureka-klient")
+    val port = getopt(args, 1, 8080).toInt()
 
     eurekaApi.register(
         appName, InstanceInfo(
@@ -22,7 +24,7 @@ fun main() {
                 instanceId = myIP,
                 status = StatusType.UP,
                 overriddenStatus = StatusType.UNKNOWN,
-                port = Port(8080, "true"),
+                port = Port(port, "true"),
                 securePort = Port(443, "false"),
                 countryId = 1,
                 dataCenterInfo = DataCenterInfo(
@@ -34,6 +36,10 @@ fun main() {
     )
     println("registered successfully")
 }
+
+private fun getopt(args: Array<String>, number: Int, default: Any) =
+    if (args.size >= number + 1) args[number] else default.toString()
+
 
 private fun getMyIPAddr(): String {
     val socket = Socket()
