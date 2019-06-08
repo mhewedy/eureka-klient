@@ -28,16 +28,15 @@ fun main() {
 
     val instanceWrapper = Wrapper(
         Instance(
-            hostName = "localhost",
-            app = "eureka-client-test",
+            instanceId = "192.168.1.10",
+            hostName = "192.168.1.10",
+            app = "eureka-klient",
             ipAddr = "192.168.1.10",
-            secureVipAddress = "192.168.1.11",
             status = StatusType.UP,
-            vipAddress = "192.168.1.12",
-            securePort = 0,
-            homePageUrl = "http://localhost/home-page-url",
-            statusPageUrl = "http://localhost/status-page-url",
-            healthCheckUrl = "http://localhost/health-check-url",
+            overriddenStatus = StatusType.UNKNOWN,
+            port = Port(8080, "true"),
+            securePort = Port(443, "false"),
+            countryId = 1,
             dataCenterInfo = DataCenterInfo(
                 DcNameType.MY_OWN,
                 "com.netflix.appinfo.InstanceInfo\$DefaultDataCenterInfo"
