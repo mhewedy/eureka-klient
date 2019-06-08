@@ -1,23 +1,20 @@
 package eureka
 
-import helpers.json.Parser
 import helpers.post
+import java.net.InetSocketAddress
+import java.net.Socket
 
 const val apiBaseUrl = "http://localhost:8761/eureka"
 
 interface EurekaApi {
-    fun register(app: String, instanceInfo: InstanceInfo)
+    fun register(appName: String, instanceInfo: InstanceInfo)
 }
 
 class EurekaApiImpl : EurekaApi {
 
-    override fun register(app: String, instanceInfo: InstanceInfo) {
-
-        post("$apiBaseUrl/apps/$app", instanceInfo) {
-            println(responseCode)
-            Parser(responseText).use {
-                println(it.parse())
-            }
+    override fun register(appName: String, instanceInfo: InstanceInfo) {
+        post("$apiBaseUrl/apps/$appName", instanceInfo) {
+            if (responseCode != 204) throw Exception(responseText)
         }
     }
 }
@@ -25,7 +22,7 @@ class EurekaApiImpl : EurekaApi {
 fun main() {
     val eurekaApi = EurekaApiImpl()
 
-    val myIP = "192.168.1.10"
+    val myIP = getMyIPAddr()
     val appName = "eureka-klient"
 
     eurekaApi.register(
@@ -47,4 +44,10 @@ fun main() {
             )
         )
     )
+}
+
+private fun getMyIPAddr(): String {
+    val socket = Socket()
+    socket.connect(InetSocketAddress("google.com", 80))
+    return socket.localAddress.hostAddress
 }
