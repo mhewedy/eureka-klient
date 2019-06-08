@@ -1,5 +1,7 @@
 package eureka
 
+data class Wrapper(val instance: Instance)
+
 class Instance(
     var hostName: String,
     var app: String,
@@ -17,7 +19,11 @@ class Instance(
     var metadata: AppMetadataType? = null
 )
 
-class DataCenterInfo(var name: DcNameType, var metadata: AmazonMetdataType? = null)
+class DataCenterInfo(
+    var name: DcNameType,
+    val `@class`: String,
+    var metadata: AmazonMetdataType? = null
+)
 
 class LeaseInfo(var evictionDurationInSecs: Long? = null)
 

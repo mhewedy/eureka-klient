@@ -19,12 +19,13 @@ class ModelTest {
             homePageUrl = "http://localhost/home-page-url",
             statusPageUrl = "http://localhost/status-page-url",
             healthCheckUrl = "http://localhost/health-check-url",
-            dataCenterInfo = DataCenterInfo(DcNameType.MY_OWN)
+            dataCenterInfo = DataCenterInfo(DcNameType.MY_OWN, "")
         )
 
         val expected = """{
               "app": "eureka-client-test",
               "dataCenterInfo": {
+                "@class":"",
                 "metadata": null,
                 "name": {
                   "value": "MyOwn"
