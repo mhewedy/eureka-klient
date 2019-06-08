@@ -76,4 +76,4 @@ Found in `eureka.EurekaApi.kt` file, currently only the `register` function is a
 ```
 
 ### Why?
-I am working on app with bloated unnecessary services that most of the time is just pain-in-the-head to got all of the them running and registered to the eureka registery to do absloutly nothing. So I decided to write a simple client that can work as a drop-in replacemnt.
+I am working on app with bloated unnecessary services that most of the time is just pain-in-the-head to got all of the them running and registered to the eureka registery to do absloutly nothing important. So I decided to write a simple client that can work as a drop-in replacemnt.
