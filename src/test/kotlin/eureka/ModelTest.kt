@@ -1,3 +1,5 @@
+package eureka
+
 import helpers.json.toJson
 import kotlin.test.Test
 import kotlin.test.assertEquals

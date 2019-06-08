@@ -1,3 +1,5 @@
+package eureka
+
 class Instance(
     var hostName: String,
     var app: String,
