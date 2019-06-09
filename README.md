@@ -7,11 +7,16 @@ I've written the `JSON` serializer, the deserializer (the most hard part), and t
 
 ### Infrastructure Components:
 1. **JSON serializer** (`helpers.json.Serializer.kt`):
-Simple serializer that accepts object and returns json string, with ability to override the generated string for a certain object in the object graph.
+
+    Simple serializer that accepts object and returns json string, with ability to override the generated string for a certain object in the object graph.
+
 2. **JSON deserializer/parser** (`helpers.json.Deserializer.kt`):
-It is not a feature-complete and not confirms to `RFC 7159`, it is just good-enough and do parses most cases you could face in day-to-day (e.g. arrays of objects of arrays of arrays of objects of arrays of scalars)
+
+    It is not a feature-complete and not confirms to `RFC 7159`, it is just good-enough and do parses most cases you could face in day-to-day (e.g. arrays of objects of arrays of arrays of objects of arrays of scalars)
+
 3. **HTTP Client library** (`helpers.HttpClient.kt`):
-A simple wrapper on top of `HttpURLConnection` of Java
+
+    A simple wrapper on top of `HttpURLConnection` of Java
 
 ### Eureka Client:
 Found in `eureka.EurekaApi.kt` file, currently only the `register` function is avaiable, other functions will be added later. 
@@ -36,7 +41,39 @@ Found in `eureka.EurekaApi.kt` file, currently only the `register` function is a
   `mvn spring-boot:run`
  
 2. In `eureka-klient`, go to: `main.kt` file and run the `main` function to start the client.
-3. Now go to http://localhost:8080 and check your app is registered.
+  You can regsiter multipe clients by changeing the client name and the port via cli:
+```bash  
+   mvn clean package -DskipTests
+   kotlin -cp target/eureka-klient-*.jar  MainKt myService 8899
+```
+3. Now go to http://localhost:8080 and check your app is registered. You can verify apps are registered using:
+
+   `curl -H 'Accept: application/json'  http://localhost:8080/eureka/apps | jq`
+
+    you will got output similar to:
+
+```js
+{
+  "applications": {
+    "versions__delta": "1",
+    "apps__hashcode": "UP_2_",
+    "application": [
+      {
+        "name": "MYSERVICE",
+        "instance": [
+          {
+            "instanceId": "192.168.1.10",
+            "hostName": "192.168.1.10",
+            "app": "MYSERVICE",
+            "ipAddr": "192.168.1.10",
+            "status": "UP",
+            "overriddenStatus": "UNKNOWN",
+            "port": {
+              "$": 8089,
+              "@enabled": "true"
+            },
+            // ....... rest of json string ....... 
+```
 
 ### Why?
-I am working on app with bloated unnecessary services that most of the time is just pain-in-the-head to got all of the them running and registered to the eureka registery to do absloutly nothing. So I decided to write a simple client that can work as a drop-in replacemnt.
+I am working on app with bloated unnecessary services that most of the time is just pain-in-the-head to got all of the them running and registered to the eureka registery to do absloutly nothing important. So I decided to write a simple client that can work as a drop-in replacemnt.
