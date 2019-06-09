@@ -2,8 +2,7 @@ import eureka.*
 import helpers.getopt
 import helpers.startServer
 import java.lang.Thread.sleep
-import java.net.InetSocketAddress
-import java.net.Socket
+import java.net.InetAddress
 
 /**
  * to use the client, you need a eureka server, I suggest use spring-cloud wrapped server.
@@ -12,15 +11,14 @@ import java.net.Socket
  */
 fun main(args: Array<String>) {
 
-    val eurekaApi = EurekaApiImpl()
+    val eurekaApi = EurekaApi.create()
 
-    val myIP = getMyIPAddr()
+    val myIP = InetAddress.getLocalHost().hostAddress
     val app = getopt(args, 0, "eureka-klient")
     val port = getopt(args, 1, 8080).toInt()
 
     startServer(port)
 
-    println("registering: $app on port: $port")
     eurekaApi.register(
         app, InstanceInfo(
             Instance(
@@ -40,17 +38,10 @@ fun main(args: Array<String>) {
             )
         )
     )
-    println("registered successfully")
+    println("registered: $app on port: $port")
 
     while (true) {
         sleep(60 * 1000)
-        println("renew lease for: $app/$myIP")
         eurekaApi.renew(app, myIP)
     }
-}
-
-private fun getMyIPAddr(): String {
-    val socket = Socket()
-    socket.connect(InetSocketAddress("google.com", 80))
-    return socket.localAddress.hostAddress
 }

@@ -8,12 +8,16 @@ import java.util.*
 private val apiBaseUrl = "http://localhost:${getprop("eureka.server.port")}/eureka"
 
 interface EurekaApi {
+    companion object {
+        fun create(): EurekaApi = EurekaApiImpl()
+    }
+
     fun register(app: String, instanceInfo: InstanceInfo)
 
     fun renew(app: String, instanceId: String)
 }
 
-class EurekaApiImpl : EurekaApi {
+private class EurekaApiImpl : EurekaApi {
 
     override fun register(app: String, instanceInfo: InstanceInfo) {
         post("$apiBaseUrl/apps/$app", instanceInfo, headers = buildHeaders()) {
