@@ -1,5 +1,6 @@
 import eureka.*
 import helpers.getopt
+import helpers.startServer
 import java.lang.Thread.sleep
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -17,8 +18,9 @@ fun main(args: Array<String>) {
     val app = getopt(args, 0, "eureka-klient")
     val port = getopt(args, 1, 8080).toInt()
 
-    println("registering: $app on port: $port")
+    startServer(port)
 
+    println("registering: $app on port: $port")
     eurekaApi.register(
         app, InstanceInfo(
             Instance(
