@@ -1,4 +1,5 @@
 import eureka.*
+import helpers.getopt
 import java.net.InetSocketAddress
 import java.net.Socket
 
@@ -36,10 +37,6 @@ fun main(args: Array<String>) {
     )
     println("registered successfully")
 }
-
-private fun getopt(args: Array<String>, number: Int, default: Any) =
-    if (args.size >= number + 1) args[number] else default.toString()
-
 
 private fun getMyIPAddr(): String {
     val socket = Socket()
