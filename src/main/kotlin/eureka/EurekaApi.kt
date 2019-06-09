@@ -1,8 +1,9 @@
 package eureka
 
+import helpers.getprop
 import helpers.post
 
-const val apiBaseUrl = "http://localhost:8080/eureka"
+private val apiBaseUrl = "http://localhost:${getprop("eureka.server.port")}/eureka"
 
 interface EurekaApi {
     fun register(appName: String, instanceInfo: InstanceInfo)

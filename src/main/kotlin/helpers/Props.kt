@@ -23,10 +23,10 @@ private val funIterator = arrayOf(
     fun(key: String) = properties[key]?.toString()
 ).iterator()
 
-fun getProperty(key: String, default: String) = getProperty(key) ?: default
-fun getProperty(key: String, default: Int) = getProperty(key)?.toInt() ?: default
+fun getprop(key: String, default: String) = getprop(key) ?: default
+fun getprop(key: String, default: Int) = getprop(key)?.toInt() ?: default
 
-fun getProperty(key: String): String? {
+fun getprop(key: String): String? {
     var value: String? = null
     while (value == null && funIterator.hasNext()) {
         value = funIterator.next().invoke(key)
