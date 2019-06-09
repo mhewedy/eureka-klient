@@ -17,17 +17,18 @@ private val properties = InputStreamReader(
     props
 }
 
-private val funIterator = arrayOf(
+private val propsFunctions = arrayOf(
     fun(key: String) = System.getenv(key.toUpperCase().replace('.', '_').replace('-', '_')),
     fun(key: String) = System.getProperty(key),
     fun(key: String) = properties[key]?.toString()
-).iterator()
+)
 
 fun getprop(key: String, default: String) = getprop(key) ?: default
 fun getprop(key: String, default: Int) = getprop(key)?.toInt() ?: default
 
 fun getprop(key: String): String? {
     var value: String? = null
+    val funIterator = propsFunctions.iterator()
     while (value == null && funIterator.hasNext()) {
         value = funIterator.next().invoke(key)
     }
