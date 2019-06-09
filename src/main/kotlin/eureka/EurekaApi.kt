@@ -2,24 +2,32 @@ package eureka
 
 import helpers.getprop
 import helpers.post
+import helpers.put
 import java.util.*
 
 private val apiBaseUrl = "http://localhost:${getprop("eureka.server.port")}/eureka"
 
 interface EurekaApi {
-    fun register(appName: String, instanceInfo: InstanceInfo)
+    fun register(app: String, instanceInfo: InstanceInfo)
+
+    fun renew(app: String, instanceId: String)
 }
 
 class EurekaApiImpl : EurekaApi {
 
-    override fun register(appName: String, instanceInfo: InstanceInfo) {
-
-        println("registering: $appName on port: ${instanceInfo.instance.port.`$`}")
-
-        post("$apiBaseUrl/apps/$appName", instanceInfo, headers = buildHeaders()) {
-            if (httpCode != 204) throw Exception(rawResponse)
+    override fun register(app: String, instanceInfo: InstanceInfo) {
+        post("$apiBaseUrl/apps/$app", instanceInfo, headers = buildHeaders()) {
+            if (204 != httpCode) throw Exception("$httpCode: $rawResponse")
         }
     }
+
+    override fun renew(app: String, instanceId: String) {
+        put<Unit>("$apiBaseUrl/apps/$app/$instanceId", headers = buildHeaders()) {
+            if (200 != httpCode) throw Exception("$httpCode: $rawResponse")
+        }
+    }
+
+    // -- private
 
     private fun buildHeaders(): Array<Pair<String, String>> {
         val headers = arrayListOf<Pair<String, String>>()

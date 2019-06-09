@@ -1,5 +1,6 @@
 import eureka.*
 import helpers.getopt
+import java.lang.Thread.sleep
 import java.net.InetSocketAddress
 import java.net.Socket
 
@@ -13,13 +14,15 @@ fun main(args: Array<String>) {
     val eurekaApi = EurekaApiImpl()
 
     val myIP = getMyIPAddr()
-    val appName = getopt(args, 0, "eureka-klient")
+    val app = getopt(args, 0, "eureka-klient")
     val port = getopt(args, 1, 8080).toInt()
 
+    println("registering: $app on port: $port")
+
     eurekaApi.register(
-        appName, InstanceInfo(
+        app, InstanceInfo(
             Instance(
-                app = appName,
+                app = app,
                 ipAddr = myIP,
                 hostName = myIP,
                 instanceId = myIP,
@@ -36,6 +39,12 @@ fun main(args: Array<String>) {
         )
     )
     println("registered successfully")
+
+    while (true) {
+        sleep(60 * 1000)
+        println("renew lease for: $app/$myIP")
+        eurekaApi.renew(app, myIP)
+    }
 }
 
 private fun getMyIPAddr(): String {
