@@ -39,12 +39,12 @@ Found in `eureka.EurekaApi.kt` file, currently only the `register` function is a
  ```
   * Now run:
   `mvn spring-boot:run`
- 
+ > You can use jhispter register [docker image](https://hub.docker.com/r/jhipster/jhipster-registry)
 2. In `eureka-klient`, go to: `main.kt` file and run the `main` function to start the client.
-  You can regsiter multipe clients by changeing the client name and the port via cli:
+  You can register multiple clients by changing the client name and the port via cli:
 ```bash  
    mvn clean package -DskipTests
-   kotlin -cp target/eureka-klient-*.jar  MainKt myService 8899
+   EUREKA_SERVER_PORT=8080 java -jar target/eureka-klient-*-jar-with-dependencies.jar servie1 7771
 ```
 3. Now go to http://localhost:8080 and check your app is registered. You can verify apps are registered using:
 
