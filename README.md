@@ -39,12 +39,14 @@ Found in `eureka.EurekaApi.kt` file, currently only the `register` function is a
  ```
   * Now run:
   `mvn spring-boot:run`
+  
  > You can use jhispter register [docker image](https://hub.docker.com/r/jhipster/jhipster-registry)
+ 
 2. In `eureka-klient`, go to: `main.kt` file and run the `main` function to start the client.
   You can register multiple clients by changing the client name and the port via cli:
 ```bash  
    mvn clean package -DskipTests
-   EUREKA_SERVER_PORT=8080 java -jar target/eureka-klient-*-jar-with-dependencies.jar servie1 7771
+   EUREKA_SERVER_PORT=8080 java -jar target/eureka-klient-*-jar-with-dependencies.jar svc1 8081
 ```
 3. Now go to http://localhost:8080 and check your app is registered. You can verify apps are registered using:
 
@@ -74,6 +76,38 @@ Found in `eureka.EurekaApi.kt` file, currently only the `register` function is a
             },
             // ....... rest of json string ....... 
 ```
+4. You can also call the client running on step 2 above from spring-cloud eureka client:
 
+```java
+
+@EnableDiscoveryClient
+@SpringBootApplication
+class DemoApplication : CommandLineRunner {
+
+    @Autowired
+    lateinit var restTemplate: RestTemplate
+    @Autowired
+    lateinit var discoveryClient: DiscoveryClient
+
+    override fun run(vararg args: String?) {
+
+        println(discoveryClient.getInstances("svc1"))
+
+        val entity = restTemplate.getForEntity("http://svc1", String::class.java)
+        println(entity.statusCode)
+        println(entity.body)
+
+    }
+
+    @Bean
+    @LoadBalanced
+    fun restTemplate(): RestTemplate = RestTemplate()
+}
+
+fun main(args: Array<String>) {
+    runApplication<DemoApplication>(*args)
+}
+
+```
 ### Why?
 I am working on app with bloated unnecessary services that most of the time is just pain-in-the-head to got all of the them running and registered to the eureka registery to do absloutly nothing important. So I decided to write a simple client that can work as a drop-in replacemnt.

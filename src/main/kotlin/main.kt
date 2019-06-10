@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
                 ipAddr = myIP,
                 hostName = myIP,
                 instanceId = myIP,
-                vipAddress = myIP,
+                vipAddress = app,
                 status = StatusType.UP,
                 overriddenStatus = StatusType.UNKNOWN,
                 port = Port(port, "true"),
