@@ -24,9 +24,9 @@ Found in `eureka.EurekaApi.kt` file, the `register` and `renew` functions are im
 ### How to use:
 1. Install eureka server by either:
 
- a. spring-cloud from [start.spring.io](https://start.spring.io/starter.zip?type=maven-project&language=java&bootVersion=2.1.5.RELEASE&baseDir=eurekaserver&groupId=com.example&artifactId=eurekaserver&name=eurekaserver&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.eurekaserver&packaging=jar&javaVersion=1.8&style=cloud-eureka-server), you can use it to.
+ * spring-cloud from [start.spring.io](https://start.spring.io/starter.zip?type=maven-project&language=java&bootVersion=2.1.5.RELEASE&baseDir=eurekaserver&groupId=com.example&artifactId=eurekaserver&name=eurekaserver&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.eurekaserver&packaging=jar&javaVersion=1.8&style=cloud-eureka-server), you can use it to.
 
-  * After extract the zip file, go to the `EurekaserverApplication` and add annotation: `@org.springframework.cloud.netflix.eureka.server.EnableEurekaServer`  on top of `EurekaserverApplication` :
+  After extract the zip file, go to the `EurekaserverApplication` and add annotation: `@org.springframework.cloud.netflix.eureka.server.EnableEurekaServer`  on top of `EurekaserverApplication` :
   ```java
  @org.springframework.cloud.netflix.eureka.server.EnableEurekaServer
  @SpringBootApplication
@@ -38,10 +38,10 @@ Found in `eureka.EurekaApi.kt` file, the `register` and `renew` functions are im
 
  }
  ```
-  * Now run:
-  `mvn spring-boot:run`
+   Now run:
+   `mvn spring-boot:run`
   
-  b. You can also use jhispter register instead of building your own spring-boot based registery [docker image](https://hub.docker.com/r/jhipster/jhipster-registry)
+  * You can also use jhispter register instead of building your own spring-boot based registery [docker image](https://hub.docker.com/r/jhipster/jhipster-registry)
  
 2. In `eureka-klient`, go to: `main.kt` file and run the `main` function to start the client.
   You can register multiple clients by changing the client name and the port via cli:
