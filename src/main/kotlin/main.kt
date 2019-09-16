@@ -6,7 +6,7 @@ import java.net.InetAddress
 
 /**
  * to use the client, you need a eureka server, I suggest use spring-cloud wrapped server.
- * see READEME.md for more details.
+ * see README.md for more details.
  *
  */
 fun main(args: Array<String>) {
