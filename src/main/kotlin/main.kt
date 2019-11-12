@@ -11,14 +11,13 @@ import java.net.InetAddress
  */
 fun main(args: Array<String>) {
 
-    val eurekaApi = EurekaApi.create()
-
     val myIP = InetAddress.getLocalHost().hostAddress
     val app = getopt(args, 0, "eureka-klient")
     val port = getopt(args, 1, 8080).toInt()
 
     startServer(port)
 
+    val eurekaApi = EurekaApi.create()
     eurekaApi.register(
         app, InstanceInfo(
             Instance(
